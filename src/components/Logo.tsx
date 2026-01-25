@@ -2,12 +2,12 @@ import React from 'react';
 
 const Logo: React.FC = () => {
   return (
-    <div className="flex items-center justify-center gap-2 mb-8">
-      <div className="w-12 h-12 bg-primary rounded-lg flex items-center justify-center">
+    <div className="flex items-center justify-center gap-2 mb-6">
+      <div className="w-10 h-10 bg-secondary rounded-lg flex items-center justify-center">
         <svg 
           viewBox="0 0 24 24" 
           fill="none" 
-          className="w-8 h-8 text-white"
+          className="w-6 h-6 text-white"
           stroke="currentColor" 
           strokeWidth="2"
         >
@@ -17,8 +17,8 @@ const Logo: React.FC = () => {
         </svg>
       </div>
       <div className="flex flex-col">
-        <span className="text-2xl font-bold text-foreground tracking-tight">BOSCH</span>
-        <span className="text-xs text-primary font-medium tracking-widest">REXROTH</span>
+        <span className="text-xl font-bold text-foreground tracking-tight">BOSCH</span>
+        <span className="text-[10px] text-secondary font-medium tracking-widest">REXROTH</span>
       </div>
     </div>
   );

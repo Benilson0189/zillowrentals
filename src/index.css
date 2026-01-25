@@ -6,23 +6,23 @@
 
 @layer base {
   :root {
-    --background: 220 20% 10%;
-    --foreground: 0 0% 100%;
+    --background: 220 15% 8%;
+    --foreground: 30 20% 96%;
 
-    --card: 220 20% 12%;
-    --card-foreground: 0 0% 100%;
+    --card: 220 15% 10%;
+    --card-foreground: 30 20% 96%;
 
-    --popover: 220 20% 12%;
-    --popover-foreground: 0 0% 100%;
+    --popover: 220 15% 10%;
+    --popover-foreground: 30 20% 96%;
 
-    --primary: 210 100% 50%;
-    --primary-foreground: 0 0% 100%;
+    --primary: 30 30% 92%;
+    --primary-foreground: 220 20% 15%;
 
-    --secondary: 220 15% 20%;
+    --secondary: 210 100% 50%;
     --secondary-foreground: 0 0% 100%;
 
-    --muted: 220 15% 25%;
-    --muted-foreground: 220 10% 60%;
+    --muted: 220 12% 20%;
+    --muted-foreground: 220 10% 55%;
 
     --accent: 210 100% 50%;
     --accent-foreground: 0 0% 100%;
@@ -30,39 +30,39 @@
     --destructive: 0 84% 60%;
     --destructive-foreground: 0 0% 100%;
 
-    --border: 220 15% 25%;
-    --input: 220 15% 20%;
+    --border: 220 12% 20%;
+    --input: 220 12% 15%;
     --ring: 210 100% 50%;
 
     --radius: 0.75rem;
 
     /* Custom tokens */
-    --glass-bg: 220 20% 15% / 0.7;
-    --glass-border: 0 0% 100% / 0.1;
-    --input-bg: 220 20% 12% / 0.8;
+    --glass-bg: 220 15% 12% / 0.7;
+    --glass-border: 30 20% 96% / 0.1;
+    --input-bg: 220 15% 10% / 0.8;
     --success: 142 76% 36%;
     --warning: 38 92% 50%;
   }
 
   .dark {
-    --background: 220 20% 10%;
-    --foreground: 0 0% 100%;
-    --card: 220 20% 12%;
-    --card-foreground: 0 0% 100%;
-    --popover: 220 20% 12%;
-    --popover-foreground: 0 0% 100%;
-    --primary: 210 100% 50%;
-    --primary-foreground: 0 0% 100%;
-    --secondary: 220 15% 20%;
+    --background: 220 15% 8%;
+    --foreground: 30 20% 96%;
+    --card: 220 15% 10%;
+    --card-foreground: 30 20% 96%;
+    --popover: 220 15% 10%;
+    --popover-foreground: 30 20% 96%;
+    --primary: 30 30% 92%;
+    --primary-foreground: 220 20% 15%;
+    --secondary: 210 100% 50%;
     --secondary-foreground: 0 0% 100%;
-    --muted: 220 15% 25%;
-    --muted-foreground: 220 10% 60%;
+    --muted: 220 12% 20%;
+    --muted-foreground: 220 10% 55%;
     --accent: 210 100% 50%;
     --accent-foreground: 0 0% 100%;
     --destructive: 0 84% 60%;
     --destructive-foreground: 0 0% 100%;
-    --border: 220 15% 25%;
-    --input: 220 15% 20%;
+    --border: 220 12% 20%;
+    --input: 220 12% 15%;
     --ring: 210 100% 50%;
   }
 }
@@ -86,16 +86,16 @@
   }
 
   .input-dark {
-    @apply rounded-xl border-0 px-4 py-3 text-foreground placeholder:text-muted-foreground focus:ring-2 focus:ring-primary/50;
+    @apply rounded-lg border-0 px-3 py-2 text-sm text-foreground placeholder:text-muted-foreground focus:ring-2 focus:ring-secondary/50;
     background: hsl(var(--input-bg));
   }
 
   .btn-primary {
-    @apply w-full py-3 rounded-xl font-semibold text-primary bg-white hover:bg-white/90 transition-all duration-200 shadow-lg;
+    @apply w-full py-2.5 rounded-lg font-medium text-sm text-primary-foreground bg-primary hover:bg-primary/90 transition-all duration-200 shadow-md;
   }
 
   .btn-outline {
-    @apply w-full py-3 rounded-xl font-semibold text-white bg-transparent border border-white/30 hover:bg-white/10 transition-all duration-200;
+    @apply w-full py-2.5 rounded-lg font-medium text-sm text-foreground bg-transparent border border-foreground/30 hover:bg-foreground/10 transition-all duration-200;
   }
 
   .icon-input-wrapper {
@@ -103,11 +103,11 @@
   }
 
   .icon-input-wrapper .icon {
-    @apply absolute left-4 text-muted-foreground pointer-events-none;
+    @apply absolute left-3 text-muted-foreground pointer-events-none;
   }
 
   .icon-input-wrapper input {
-    @apply pl-12;
+    @apply pl-10;
   }
 }
 

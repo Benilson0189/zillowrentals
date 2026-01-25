@@ -110,127 +110,127 @@ const Team: React.FC = () => {
   const totalInvited = teamStats.level1.total + teamStats.levelB.total + teamStats.levelC.total;
 
   return (
-    <div className="min-h-screen bg-background pb-24">
+    <div className="min-h-screen bg-background pb-20">
       {/* Header */}
-      <header className="glass-card mx-4 mt-4 p-4 flex items-center gap-3">
-        <button onClick={() => navigate('/dashboard')} className="p-2 rounded-full hover:bg-white/10">
-          <ArrowLeft className="w-5 h-5 text-foreground" />
+      <header className="glass-card mx-3 mt-3 p-3 flex items-center gap-2">
+        <button onClick={() => navigate('/dashboard')} className="p-1.5 rounded-full hover:bg-foreground/10">
+          <ArrowLeft className="w-4 h-4 text-foreground" />
         </button>
-        <h1 className="text-xl font-bold text-foreground">Minha Equipe</h1>
+        <h1 className="text-base font-semibold text-foreground">Minha Equipe</h1>
       </header>
 
       {/* Invite Link */}
-      <div className="glass-card mx-4 mt-4 p-4">
-        <p className="text-sm text-muted-foreground mb-2">Seu link de convite</p>
+      <div className="glass-card mx-3 mt-3 p-3">
+        <p className="text-xs text-muted-foreground mb-1.5">Seu link de convite</p>
         <div className="flex items-center gap-2">
-          <div className="flex-1 input-dark py-2 px-4 text-sm text-muted-foreground truncate">
+          <div className="flex-1 input-dark py-1.5 px-3 text-xs text-muted-foreground truncate">
             {inviteLink}
           </div>
           <button
             onClick={handleCopyLink}
-            className="p-3 bg-primary rounded-xl hover:bg-primary/90 transition-colors"
+            className="p-2 bg-secondary rounded-lg hover:bg-secondary/90 transition-colors"
           >
             {copied ? (
-              <CheckCircle className="w-5 h-5 text-white" />
+              <CheckCircle className="w-4 h-4 text-white" />
             ) : (
-              <Copy className="w-5 h-5 text-white" />
+              <Copy className="w-4 h-4 text-white" />
             )}
           </button>
         </div>
       </div>
 
       {/* Team Stats */}
-      <div className="mx-4 mt-4 grid grid-cols-2 gap-3">
-        <div className="glass-card p-4">
-          <div className="flex items-center gap-2 mb-2">
-            <UserCheck className="w-5 h-5 text-success" />
-            <span className="text-sm text-muted-foreground">Ativos</span>
+      <div className="mx-3 mt-3 grid grid-cols-2 gap-2">
+        <div className="glass-card p-3">
+          <div className="flex items-center gap-1.5 mb-1">
+            <UserCheck className="w-4 h-4 text-success" />
+            <span className="text-xs text-muted-foreground">Ativos</span>
           </div>
-          <p className="text-2xl font-bold text-foreground">{totalActive}</p>
+          <p className="text-xl font-bold text-foreground">{totalActive}</p>
         </div>
-        <div className="glass-card p-4">
-          <div className="flex items-center gap-2 mb-2">
-            <Users className="w-5 h-5 text-primary" />
-            <span className="text-sm text-muted-foreground">Total</span>
+        <div className="glass-card p-3">
+          <div className="flex items-center gap-1.5 mb-1">
+            <Users className="w-4 h-4 text-secondary" />
+            <span className="text-xs text-muted-foreground">Total</span>
           </div>
-          <p className="text-2xl font-bold text-foreground">{totalInvited}</p>
+          <p className="text-xl font-bold text-foreground">{totalInvited}</p>
         </div>
       </div>
 
       {/* Level Stats */}
-      <div className="mx-4 mt-4 grid grid-cols-3 gap-3">
+      <div className="mx-3 mt-3 grid grid-cols-3 gap-2">
         <button
           onClick={() => setFilterLevel(filterLevel === 1 ? null : 1)}
-          className={`glass-card p-3 text-center transition-colors ${filterLevel === 1 ? 'ring-2 ring-primary' : ''}`}
+          className={`glass-card p-2 text-center transition-colors ${filterLevel === 1 ? 'ring-2 ring-secondary' : ''}`}
         >
-          <p className="text-xs text-muted-foreground mb-1">Nível 1</p>
-          <p className="text-lg font-bold text-foreground">{teamStats.level1.total}</p>
-          <p className="text-xs text-success">{teamStats.level1.active} ativos</p>
+          <p className="text-[10px] text-muted-foreground mb-0.5">Nível 1</p>
+          <p className="text-sm font-bold text-foreground">{teamStats.level1.total}</p>
+          <p className="text-[10px] text-success">{teamStats.level1.active} ativos</p>
         </button>
         <button
           onClick={() => setFilterLevel(filterLevel === 2 ? null : 2)}
-          className={`glass-card p-3 text-center transition-colors ${filterLevel === 2 ? 'ring-2 ring-primary' : ''}`}
+          className={`glass-card p-2 text-center transition-colors ${filterLevel === 2 ? 'ring-2 ring-secondary' : ''}`}
         >
-          <p className="text-xs text-muted-foreground mb-1">Nível B</p>
-          <p className="text-lg font-bold text-foreground">{teamStats.levelB.total}</p>
-          <p className="text-xs text-success">{teamStats.levelB.active} ativos</p>
+          <p className="text-[10px] text-muted-foreground mb-0.5">Nível B</p>
+          <p className="text-sm font-bold text-foreground">{teamStats.levelB.total}</p>
+          <p className="text-[10px] text-success">{teamStats.levelB.active} ativos</p>
         </button>
         <button
           onClick={() => setFilterLevel(filterLevel === 3 ? null : 3)}
-          className={`glass-card p-3 text-center transition-colors ${filterLevel === 3 ? 'ring-2 ring-primary' : ''}`}
+          className={`glass-card p-2 text-center transition-colors ${filterLevel === 3 ? 'ring-2 ring-secondary' : ''}`}
         >
-          <p className="text-xs text-muted-foreground mb-1">Nível C</p>
-          <p className="text-lg font-bold text-foreground">{teamStats.levelC.total}</p>
-          <p className="text-xs text-success">{teamStats.levelC.active} ativos</p>
+          <p className="text-[10px] text-muted-foreground mb-0.5">Nível C</p>
+          <p className="text-sm font-bold text-foreground">{teamStats.levelC.total}</p>
+          <p className="text-[10px] text-success">{teamStats.levelC.active} ativos</p>
         </button>
       </div>
 
       {/* Invited Users List */}
-      <div className="mx-4 mt-4">
-        <h2 className="text-lg font-semibold text-foreground mb-3">
+      <div className="mx-3 mt-3">
+        <h2 className="text-sm font-medium text-foreground mb-2">
           Convidados {filterLevel ? `(Nível ${filterLevel === 1 ? '1' : filterLevel === 2 ? 'B' : 'C'})` : ''}
         </h2>
         
-        <div className="space-y-3">
+        <div className="space-y-2">
           {filteredUsers.map((user) => (
             <div key={user.id} className="glass-card overflow-hidden">
               <button
                 onClick={() => setExpandedUser(expandedUser === user.id ? null : user.id)}
-                className="w-full p-4 flex items-center justify-between"
+                className="w-full p-3 flex items-center justify-between"
               >
-                <div className="flex items-center gap-3">
-                  <div className={`w-10 h-10 rounded-full flex items-center justify-center ${
+                <div className="flex items-center gap-2">
+                  <div className={`w-8 h-8 rounded-full flex items-center justify-center ${
                     user.isActive ? 'bg-success/20' : 'bg-muted/20'
                   }`}>
                     {user.isActive ? (
-                      <UserCheck className="w-5 h-5 text-success" />
+                      <UserCheck className="w-4 h-4 text-success" />
                     ) : (
-                      <UserX className="w-5 h-5 text-muted-foreground" />
+                      <UserX className="w-4 h-4 text-muted-foreground" />
                     )}
                   </div>
                   <div className="text-left">
-                    <p className="font-medium text-foreground">{user.name}</p>
-                    <p className="text-xs text-muted-foreground">ID: {user.id} • Nível {user.level === 1 ? '1' : user.level === 2 ? 'B' : 'C'}</p>
+                    <p className="text-sm font-medium text-foreground">{user.name}</p>
+                    <p className="text-[10px] text-muted-foreground">ID: {user.id} • Nível {user.level === 1 ? '1' : user.level === 2 ? 'B' : 'C'}</p>
                   </div>
                 </div>
-                <div className="flex items-center gap-2">
+                <div className="flex items-center gap-1.5">
                   {user.isActive && (
-                    <span className="text-xs bg-success/20 text-success px-2 py-1 rounded-full">
+                    <span className="text-[10px] bg-success/20 text-success px-1.5 py-0.5 rounded-full">
                       Ativo
                     </span>
                   )}
                   {expandedUser === user.id ? (
-                    <ChevronUp className="w-5 h-5 text-muted-foreground" />
+                    <ChevronUp className="w-4 h-4 text-muted-foreground" />
                   ) : (
-                    <ChevronDown className="w-5 h-5 text-muted-foreground" />
+                    <ChevronDown className="w-4 h-4 text-muted-foreground" />
                   )}
                 </div>
               </button>
 
               {/* Expanded Details */}
               {expandedUser === user.id && (
-                <div className="px-4 pb-4 border-t border-white/5 pt-3">
-                  <div className="text-sm space-y-2">
+                <div className="px-3 pb-3 border-t border-foreground/5 pt-2">
+                  <div className="text-xs space-y-1.5">
                     <div className="flex justify-between">
                       <span className="text-muted-foreground">Telefone:</span>
                       <span className="text-foreground">{user.phone}</span>
@@ -242,16 +242,16 @@ const Team: React.FC = () => {
                   </div>
 
                   {user.activeInvestments.length > 0 ? (
-                    <div className="mt-3">
-                      <p className="text-sm font-medium text-foreground mb-2">Investimentos Ativos:</p>
-                      <div className="space-y-2">
+                    <div className="mt-2">
+                      <p className="text-xs font-medium text-foreground mb-1.5">Investimentos Ativos:</p>
+                      <div className="space-y-1.5">
                         {user.activeInvestments.map((inv, idx) => (
-                          <div key={idx} className="bg-white/5 rounded-lg p-3">
+                          <div key={idx} className="bg-foreground/5 rounded-lg p-2">
                             <div className="flex justify-between items-center">
-                              <span className="text-sm font-medium text-foreground">{inv.plan}</span>
-                              <span className="text-xs text-success">{inv.dailyReturn}%/dia</span>
+                              <span className="text-xs font-medium text-foreground">{inv.plan}</span>
+                              <span className="text-[10px] text-success">{inv.dailyReturn}%/dia</span>
                             </div>
-                            <p className="text-sm text-primary mt-1">
+                            <p className="text-xs text-secondary mt-0.5">
                               Kz {inv.amount.toLocaleString('pt-AO')}
                             </p>
                           </div>
@@ -259,8 +259,8 @@ const Team: React.FC = () => {
                       </div>
                     </div>
                   ) : (
-                    <div className="mt-3 bg-white/5 rounded-lg p-3 text-center">
-                      <p className="text-sm text-muted-foreground">Sem investimentos ativos</p>
+                    <div className="mt-2 bg-foreground/5 rounded-lg p-2 text-center">
+                      <p className="text-xs text-muted-foreground">Sem investimentos ativos</p>
                     </div>
                   )}
                 </div>
@@ -271,20 +271,20 @@ const Team: React.FC = () => {
       </div>
 
       {/* Bottom Navigation */}
-      <nav className="fixed bottom-0 left-0 right-0 glass-card border-t border-white/10 px-2 py-2 z-50">
+      <nav className="fixed bottom-0 left-0 right-0 glass-card border-t border-foreground/10 px-2 py-1.5 z-50">
         <div className="flex items-center justify-around">
           {bottomNavItems.map((item) => (
             <button
               key={item.label}
               onClick={() => navigate(item.path)}
-              className={`flex flex-col items-center gap-1 px-4 py-2 rounded-xl transition-colors ${
+              className={`flex flex-col items-center gap-0.5 px-3 py-1.5 rounded-lg transition-colors ${
                 item.active 
-                  ? 'text-primary bg-primary/10' 
+                  ? 'text-secondary bg-secondary/10' 
                   : 'text-muted-foreground hover:text-foreground'
               }`}
             >
-              <item.icon className="w-5 h-5" />
-              <span className="text-xs font-medium">{item.label}</span>
+              <item.icon className="w-4 h-4" />
+              <span className="text-[10px] font-medium">{item.label}</span>
             </button>
           ))}
         </div>
