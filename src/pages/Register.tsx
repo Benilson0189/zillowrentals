@@ -1,9 +1,10 @@
 import React, { useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
-import { Lock, User, Phone } from 'lucide-react';
+import { Lock, User, Eye, EyeOff } from 'lucide-react';
 import AuthLayout from '@/components/AuthLayout';
 import Logo from '@/components/Logo';
 import IconInput from '@/components/IconInput';
+import PhoneInput from '@/components/PhoneInput';
 import { toast } from 'sonner';
 import { useAuth } from '@/hooks/useAuth';
 
@@ -14,10 +15,13 @@ const Register: React.FC = () => {
   const inviteCode = searchParams.get('inviteCode') || '';
 
   const [phone, setPhone] = useState('');
+  const [countryCode, setCountryCode] = useState('+244');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [code, setCode] = useState(inviteCode);
   const [isLoading, setIsLoading] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
   // Redirect if already logged in
   React.useEffect(() => {
@@ -44,15 +48,11 @@ const Register: React.FC = () => {
       return;
     }
 
-    // Validate phone number format
-    if (!phone.startsWith('+')) {
-      toast.error('Digite o telefone com código do país (ex: +244...)');
-      return;
-    }
+    const fullPhone = `${countryCode}${phone}`;
 
     setIsLoading(true);
     
-    const { error } = await signUpWithPhone(phone, password, code);
+    const { error } = await signUpWithPhone(fullPhone, password, code);
     
     if (error) {
       toast.error(error.message || 'Erro ao criar conta');
@@ -70,29 +70,47 @@ const Register: React.FC = () => {
         <Logo />
         
         <form onSubmit={handleSubmit} className="space-y-3">
-          <IconInput
-            icon={Phone}
-            type="tel"
+          <PhoneInput
             value={phone}
             onChange={setPhone}
-            placeholder="Telefone (+244...)"
+            countryCode={countryCode}
+            onCountryCodeChange={setCountryCode}
+            placeholder="Número de telefone"
           />
           
-          <IconInput
-            icon={Lock}
-            type="password"
-            value={password}
-            onChange={setPassword}
-            placeholder="Senha (mínimo 6 caracteres)"
-          />
+          <div className="relative">
+            <IconInput
+              icon={Lock}
+              type={showPassword ? 'text' : 'password'}
+              value={password}
+              onChange={setPassword}
+              placeholder="Senha (mínimo 6 caracteres)"
+            />
+            <button
+              type="button"
+              onClick={() => setShowPassword(!showPassword)}
+              className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
+            >
+              {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
+            </button>
+          </div>
 
-          <IconInput
-            icon={Lock}
-            type="password"
-            value={confirmPassword}
-            onChange={setConfirmPassword}
-            placeholder="Confirmar Senha"
-          />
+          <div className="relative">
+            <IconInput
+              icon={Lock}
+              type={showConfirmPassword ? 'text' : 'password'}
+              value={confirmPassword}
+              onChange={setConfirmPassword}
+              placeholder="Confirmar Senha"
+            />
+            <button
+              type="button"
+              onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+              className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
+            >
+              {showConfirmPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
+            </button>
+          </div>
           
           <IconInput
             icon={User}
