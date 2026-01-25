@@ -98,11 +98,17 @@ const Dashboard: React.FC = () => {
 
       {/* Quick Actions */}
       <div className="grid grid-cols-2 gap-3 mx-3 mt-3">
-        <button className="btn-primary py-3 flex items-center justify-center gap-1.5">
+        <button 
+          onClick={() => navigate('/deposit')}
+          className="btn-primary py-3 flex items-center justify-center gap-1.5"
+        >
           <Wallet className="w-4 h-4" />
           <span>Depositar</span>
         </button>
-        <button className="btn-outline py-3 flex items-center justify-center gap-1.5">
+        <button 
+          onClick={() => navigate('/withdrawal')}
+          className="btn-outline py-3 flex items-center justify-center gap-1.5"
+        >
           <TrendingUp className="w-4 h-4" />
           <span>Sacar</span>
         </button>
