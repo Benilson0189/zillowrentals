@@ -1,19 +1,15 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { 
   Home, 
   TrendingUp, 
   Users,
   User,
-  Settings,
-  Wallet,
-  Gift,
   ChevronRight,
   LogOut,
   Bell,
   ArrowDownCircle,
   ArrowUpCircle,
-  UserCircle
 } from 'lucide-react';
 import { toast } from 'sonner';
 import { useAuth } from '@/hooks/useAuth';
@@ -33,15 +29,6 @@ const Profile: React.FC = () => {
   const { data: balanceData } = useBalance();
   
   const balance = balanceData?.balance || 0;
-  const totalEarnings = balanceData?.total_earnings || 0;
-  const commissionEarnings = balanceData?.commission_earnings || 0;
-
-  const [showInfoModal, setShowInfoModal] = useState(false);
-  const [personalInfo, setPersonalInfo] = useState({
-    fullName: profile?.full_name || '',
-    email: '',
-    document: '',
-  });
 
   const handleLogout = async () => {
     await signOut();
@@ -49,53 +36,20 @@ const Profile: React.FC = () => {
     navigate('/login');
   };
 
-  const handleSaveInfo = () => {
-    toast.success('Informações salvas com sucesso!');
-    setShowInfoModal(false);
-  };
-
   const menuItems = [
     {
-      icon: Wallet,
-      label: 'Saldo na Conta',
-      value: `Kz ${Number(balance).toLocaleString('pt-AO', { minimumFractionDigits: 2 })}`,
+      icon: ArrowDownCircle,
+      label: 'Depositar',
+      value: '',
       color: 'text-success',
-      onClick: () => navigate('/dashboard'),
-    },
-    {
-      icon: Gift,
-      label: 'Ganhos por Comissões',
-      value: `Kz ${Number(commissionEarnings).toLocaleString('pt-AO', { minimumFractionDigits: 2 })}`,
-      color: 'text-warning',
-      onClick: () => {},
+      onClick: () => navigate('/deposit'),
     },
     {
       icon: ArrowUpCircle,
-      label: 'Registro de Saque',
+      label: 'Sacar',
       value: '',
-      color: 'text-destructive',
-      onClick: () => navigate('/withdrawals'),
-    },
-    {
-      icon: ArrowDownCircle,
-      label: 'Registro de Depósito',
-      value: '',
-      color: 'text-success',
-      onClick: () => navigate('/deposits'),
-    },
-    {
-      icon: UserCircle,
-      label: 'Informações Pessoais',
-      value: '',
-      color: 'text-secondary',
-      onClick: () => setShowInfoModal(true),
-    },
-    {
-      icon: Settings,
-      label: 'Configurações',
-      value: '',
-      color: 'text-muted-foreground',
-      onClick: () => {},
+      color: 'text-warning',
+      onClick: () => navigate('/withdrawal'),
     },
   ];
 
@@ -124,26 +78,9 @@ const Profile: React.FC = () => {
       {/* Balance Summary Card */}
       <div className="glass-card mx-3 mt-3 p-4">
         <p className="text-xs text-muted-foreground mb-1">Saldo Total Disponível</p>
-        <h2 className="text-2xl font-bold text-foreground mb-3">
+        <h2 className="text-2xl font-bold text-foreground">
           Kz {Number(balance).toLocaleString('pt-AO', { minimumFractionDigits: 2 })}
         </h2>
-        
-        <div className="grid grid-cols-2 gap-3">
-          <div className="bg-foreground/5 rounded-lg p-3">
-            <TrendingUp className="w-4 h-4 text-secondary mb-1" />
-            <p className="text-[10px] text-muted-foreground">Total Ganhos</p>
-            <p className="text-sm font-medium text-foreground">
-              Kz {Number(totalEarnings).toLocaleString('pt-AO', { minimumFractionDigits: 2 })}
-            </p>
-          </div>
-          <div className="bg-foreground/5 rounded-lg p-3">
-            <Gift className="w-4 h-4 text-warning mb-1" />
-            <p className="text-[10px] text-muted-foreground">Comissões</p>
-            <p className="text-sm font-medium text-foreground">
-              Kz {Number(commissionEarnings).toLocaleString('pt-AO', { minimumFractionDigits: 2 })}
-            </p>
-          </div>
-        </div>
       </div>
 
       {/* Menu Items */}
@@ -183,71 +120,6 @@ const Profile: React.FC = () => {
 
       {/* Spacer for bottom nav */}
       <div className="h-20"></div>
-
-      {/* Personal Info Modal */}
-      {showInfoModal && (
-        <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-50 p-3">
-          <div className="glass-card w-full max-w-md p-4">
-            <div className="flex items-center justify-between mb-4">
-              <h3 className="text-base font-semibold text-foreground">Informações Pessoais</h3>
-              <button 
-                onClick={() => setShowInfoModal(false)}
-                className="p-1.5 hover:bg-foreground/10 rounded-full"
-              >
-                <ChevronRight className="w-4 h-4 text-foreground rotate-180" />
-              </button>
-            </div>
-
-            <div className="space-y-3">
-              <div>
-                <label className="block text-xs text-muted-foreground mb-1.5">
-                  Nome Completo *
-                </label>
-                <input
-                  type="text"
-                  value={personalInfo.fullName}
-                  onChange={(e) => setPersonalInfo({ ...personalInfo, fullName: e.target.value })}
-                  placeholder="Seu nome completo"
-                  className="input-dark w-full"
-                />
-              </div>
-
-              <div>
-                <label className="block text-xs text-muted-foreground mb-1.5">
-                  Email *
-                </label>
-                <input
-                  type="email"
-                  value={personalInfo.email}
-                  onChange={(e) => setPersonalInfo({ ...personalInfo, email: e.target.value })}
-                  placeholder="seu@email.com"
-                  className="input-dark w-full"
-                />
-              </div>
-
-              <div>
-                <label className="block text-xs text-muted-foreground mb-1.5">
-                  BI/Passaporte
-                </label>
-                <input
-                  type="text"
-                  value={personalInfo.document}
-                  onChange={(e) => setPersonalInfo({ ...personalInfo, document: e.target.value })}
-                  placeholder="Número do documento"
-                  className="input-dark w-full"
-                />
-              </div>
-
-              <button
-                onClick={handleSaveInfo}
-                className="btn-primary w-full py-2.5 mt-3"
-              >
-                Salvar Informações
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
 
       {/* Bottom Navigation */}
       <nav className="fixed bottom-0 left-0 right-0 glass-card border-t border-foreground/10 px-2 py-1.5 z-40">

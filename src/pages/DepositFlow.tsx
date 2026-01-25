@@ -1,14 +1,172 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ArrowLeft, Upload, CreditCard, Smartphone, Building2, Check } from 'lucide-react';
+import { ArrowLeft, Upload, CreditCard, Smartphone, Building2, Check, Copy } from 'lucide-react';
 import { toast } from 'sonner';
 import { useDeposit } from '@/hooks/useDeposit';
 
 const paymentMethods = [
-  { id: 'express', name: 'Multicaixa Express', icon: Smartphone },
-  { id: 'reference', name: 'Referência Multicaixa', icon: CreditCard },
-  { id: 'transfer', name: 'Transferência Bancária', icon: Building2 },
+  { 
+    id: 'express', 
+    name: 'Multicaixa Express', 
+    icon: Smartphone,
+    bankDetails: {
+      phone: '923 456 789',
+      name: 'KRAKEN INVEST LDA',
+    }
+  },
+  { 
+    id: 'reference', 
+    name: 'Referência Multicaixa', 
+    icon: CreditCard,
+    bankDetails: {
+      entity: '00123',
+      reference: '123 456 789',
+      name: 'KRAKEN INVEST LDA',
+    }
+  },
+  { 
+    id: 'transfer', 
+    name: 'Transferência Bancária', 
+    icon: Building2,
+    bankDetails: {
+      bank: 'Banco BAI',
+      iban: 'AO06 0040 0000 1234 5678 9012 3',
+      accountName: 'KRAKEN INVEST LDA',
+      nif: '5000123456',
+    }
+  },
 ];
+
+interface PaymentMethod {
+  id: string;
+  name: string;
+  icon: React.FC<{ className?: string }>;
+  bankDetails: {
+    phone?: string;
+    name?: string;
+    entity?: string;
+    reference?: string;
+    bank?: string;
+    iban?: string;
+    accountName?: string;
+    nif?: string;
+  };
+}
+
+const BankDetailsCard: React.FC<{ method: PaymentMethod }> = ({ method }) => {
+  const copyToClipboard = (text: string, label: string) => {
+    navigator.clipboard.writeText(text);
+    toast.success(`${label} copiado!`);
+  };
+
+  const details = method.bankDetails;
+
+  return (
+    <div className="mt-4 p-3 bg-secondary/10 border border-secondary/30 rounded-lg">
+      <h3 className="text-xs font-semibold text-secondary mb-3">Dados para Pagamento</h3>
+      <div className="space-y-2">
+        {details.phone && (
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-[10px] text-muted-foreground">Telefone</p>
+              <p className="text-sm font-medium text-foreground">{details.phone}</p>
+            </div>
+            <button 
+              onClick={() => copyToClipboard(details.phone!, 'Telefone')}
+              className="p-1.5 hover:bg-foreground/10 rounded"
+            >
+              <Copy className="w-4 h-4 text-muted-foreground" />
+            </button>
+          </div>
+        )}
+        {details.entity && (
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-[10px] text-muted-foreground">Entidade</p>
+              <p className="text-sm font-medium text-foreground">{details.entity}</p>
+            </div>
+            <button 
+              onClick={() => copyToClipboard(details.entity!, 'Entidade')}
+              className="p-1.5 hover:bg-foreground/10 rounded"
+            >
+              <Copy className="w-4 h-4 text-muted-foreground" />
+            </button>
+          </div>
+        )}
+        {details.reference && (
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-[10px] text-muted-foreground">Referência</p>
+              <p className="text-sm font-medium text-foreground">{details.reference}</p>
+            </div>
+            <button 
+              onClick={() => copyToClipboard(details.reference!, 'Referência')}
+              className="p-1.5 hover:bg-foreground/10 rounded"
+            >
+              <Copy className="w-4 h-4 text-muted-foreground" />
+            </button>
+          </div>
+        )}
+        {details.bank && (
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-[10px] text-muted-foreground">Banco</p>
+              <p className="text-sm font-medium text-foreground">{details.bank}</p>
+            </div>
+            <button 
+              onClick={() => copyToClipboard(details.bank!, 'Banco')}
+              className="p-1.5 hover:bg-foreground/10 rounded"
+            >
+              <Copy className="w-4 h-4 text-muted-foreground" />
+            </button>
+          </div>
+        )}
+        {details.iban && (
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-[10px] text-muted-foreground">IBAN</p>
+              <p className="text-sm font-medium text-foreground">{details.iban}</p>
+            </div>
+            <button 
+              onClick={() => copyToClipboard(details.iban!, 'IBAN')}
+              className="p-1.5 hover:bg-foreground/10 rounded"
+            >
+              <Copy className="w-4 h-4 text-muted-foreground" />
+            </button>
+          </div>
+        )}
+        {(details.accountName || details.name) && (
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-[10px] text-muted-foreground">Nome</p>
+              <p className="text-sm font-medium text-foreground">{details.accountName || details.name}</p>
+            </div>
+            <button 
+              onClick={() => copyToClipboard((details.accountName || details.name)!, 'Nome')}
+              className="p-1.5 hover:bg-foreground/10 rounded"
+            >
+              <Copy className="w-4 h-4 text-muted-foreground" />
+            </button>
+          </div>
+        )}
+        {details.nif && (
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-[10px] text-muted-foreground">NIF</p>
+              <p className="text-sm font-medium text-foreground">{details.nif}</p>
+            </div>
+            <button 
+              onClick={() => copyToClipboard(details.nif!, 'NIF')}
+              className="p-1.5 hover:bg-foreground/10 rounded"
+            >
+              <Copy className="w-4 h-4 text-muted-foreground" />
+            </button>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+};
 
 const DepositFlow: React.FC = () => {
   const navigate = useNavigate();
@@ -87,7 +245,7 @@ const DepositFlow: React.FC = () => {
           </div>
         )}
 
-        {/* Step 2: Payment Method */}
+        {/* Step 2: Payment Method + Bank Details */}
         {step === 2 && (
           <div className="glass-card p-4">
             <h2 className="text-sm font-medium text-foreground mb-4">Método de Pagamento</h2>
@@ -110,6 +268,13 @@ const DepositFlow: React.FC = () => {
                 </button>
               ))}
             </div>
+            
+            {/* Bank Details */}
+            {paymentMethod && (
+              <BankDetailsCard 
+                method={paymentMethods.find(m => m.id === paymentMethod)!} 
+              />
+            )}
             
             <button
               onClick={() => paymentMethod ? setStep(3) : toast.error('Selecione um método')}
