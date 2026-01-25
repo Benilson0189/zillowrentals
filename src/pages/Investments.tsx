@@ -59,41 +59,37 @@ const Investments: React.FC = () => {
             <div className="grid grid-cols-3 gap-3 mb-3">
               <div className="text-center">
                 <div className="flex items-center justify-center mb-0.5">
-                  <Percent className="w-3 h-3 text-success" />
+                  <Zap className="w-3 h-3 text-success" />
                 </div>
-                <p className="text-sm font-bold text-foreground">{Number(plan.daily_return)}%</p>
-                <p className="text-[10px] text-muted-foreground">Rendimento/dia</p>
+                <p className="text-sm font-bold text-foreground">
+                  Kz {((Number(plan.daily_return) / 100) * Number(plan.min_amount)).toLocaleString('pt-AO')}
+                </p>
+                <p className="text-[10px] text-muted-foreground">Renda/dia</p>
               </div>
               <div className="text-center">
                 <div className="flex items-center justify-center mb-0.5">
                   <Clock className="w-3 h-3 text-warning" />
                 </div>
-                <p className="text-sm font-bold text-foreground">{plan.duration_days}</p>
-                <p className="text-[10px] text-muted-foreground">Dias</p>
+                <p className="text-sm font-bold text-foreground">{plan.duration_days} dias</p>
+                <p className="text-[10px] text-muted-foreground">Duração</p>
               </div>
               <div className="text-center">
                 <div className="flex items-center justify-center mb-0.5">
-                  <Zap className="w-3 h-3 text-secondary" />
+                  <Percent className="w-3 h-3 text-secondary" />
                 </div>
                 <p className="text-sm font-bold text-foreground">
-                  {((Number(plan.daily_return) / 100) * plan.duration_days * 100).toFixed(0)}%
+                  Kz {(((Number(plan.daily_return) / 100) * Number(plan.min_amount)) * plan.duration_days).toLocaleString('pt-AO')}
                 </p>
                 <p className="text-[10px] text-muted-foreground">Retorno Total</p>
               </div>
             </div>
 
-            {/* Amount Range */}
+            {/* Investment Amount */}
             <div className="bg-foreground/5 rounded-lg p-2 mb-3">
               <div className="flex justify-between text-xs">
-                <span className="text-muted-foreground">Mínimo:</span>
+                <span className="text-muted-foreground">Investimento:</span>
                 <span className="text-foreground font-medium">
                   Kz {Number(plan.min_amount).toLocaleString('pt-AO')}
-                </span>
-              </div>
-              <div className="flex justify-between text-xs mt-0.5">
-                <span className="text-muted-foreground">Máximo:</span>
-                <span className="text-foreground font-medium">
-                  Kz {Number(plan.max_amount).toLocaleString('pt-AO')}
                 </span>
               </div>
             </div>
