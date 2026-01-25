@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { 
   Home, 
@@ -11,6 +11,7 @@ import {
   Zap
 } from 'lucide-react';
 import { toast } from 'sonner';
+import { useInvestmentPlans } from '@/hooks/useUserData';
 
 const bottomNavItems = [
   { icon: Home, label: 'Início', path: '/dashboard' },
@@ -19,60 +20,21 @@ const bottomNavItems = [
   { icon: User, label: 'Perfil', path: '/profile' },
 ];
 
-const investmentPlans = [
-  {
-    id: 1,
-    name: 'Plano Básico',
-    minAmount: 5000,
-    maxAmount: 50000,
-    dailyReturn: 2.5,
-    duration: 30,
-    color: 'from-blue-500 to-blue-600',
-  },
-  {
-    id: 2,
-    name: 'Plano Prata',
-    minAmount: 50000,
-    maxAmount: 200000,
-    dailyReturn: 3.0,
-    duration: 45,
-    color: 'from-slate-400 to-slate-500',
-  },
-  {
-    id: 3,
-    name: 'Plano Ouro',
-    minAmount: 200000,
-    maxAmount: 500000,
-    dailyReturn: 3.5,
-    duration: 60,
-    color: 'from-yellow-500 to-yellow-600',
-  },
-  {
-    id: 4,
-    name: 'Plano Diamante',
-    minAmount: 500000,
-    maxAmount: 2000000,
-    dailyReturn: 4.0,
-    duration: 90,
-    color: 'from-purple-500 to-purple-600',
-  },
-  {
-    id: 5,
-    name: 'Plano VIP',
-    minAmount: 2000000,
-    maxAmount: 10000000,
-    dailyReturn: 5.0,
-    duration: 120,
-    color: 'from-primary to-blue-400',
-  },
-];
-
 const Investments: React.FC = () => {
   const navigate = useNavigate();
+  const { data: plans, isLoading } = useInvestmentPlans();
 
-  const handleInvest = (planId: number) => {
+  const handleInvest = (planId: string) => {
     toast.info('Funcionalidade de investimento em breve!');
   };
+
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-secondary"></div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-background pb-20">
@@ -86,10 +48,10 @@ const Investments: React.FC = () => {
 
       {/* Investment Plans */}
       <div className="mx-3 mt-3 space-y-3">
-        {investmentPlans.map((plan) => (
+        {plans?.map((plan) => (
           <div key={plan.id} className="glass-card p-3 overflow-hidden">
             {/* Plan Header */}
-            <div className={`bg-gradient-to-r ${plan.color} -mx-3 -mt-3 px-3 py-2 mb-3`}>
+            <div className={`bg-gradient-to-r ${plan.color_class || 'from-blue-500 to-blue-600'} -mx-3 -mt-3 px-3 py-2 mb-3`}>
               <h3 className="text-sm font-semibold text-white">{plan.name}</h3>
             </div>
 
@@ -99,14 +61,14 @@ const Investments: React.FC = () => {
                 <div className="flex items-center justify-center mb-0.5">
                   <Percent className="w-3 h-3 text-success" />
                 </div>
-                <p className="text-sm font-bold text-foreground">{plan.dailyReturn}%</p>
+                <p className="text-sm font-bold text-foreground">{Number(plan.daily_return)}%</p>
                 <p className="text-[10px] text-muted-foreground">Rendimento/dia</p>
               </div>
               <div className="text-center">
                 <div className="flex items-center justify-center mb-0.5">
                   <Clock className="w-3 h-3 text-warning" />
                 </div>
-                <p className="text-sm font-bold text-foreground">{plan.duration}</p>
+                <p className="text-sm font-bold text-foreground">{plan.duration_days}</p>
                 <p className="text-[10px] text-muted-foreground">Dias</p>
               </div>
               <div className="text-center">
@@ -114,7 +76,7 @@ const Investments: React.FC = () => {
                   <Zap className="w-3 h-3 text-secondary" />
                 </div>
                 <p className="text-sm font-bold text-foreground">
-                  {((plan.dailyReturn / 100) * plan.duration * 100).toFixed(0)}%
+                  {((Number(plan.daily_return) / 100) * plan.duration_days * 100).toFixed(0)}%
                 </p>
                 <p className="text-[10px] text-muted-foreground">Retorno Total</p>
               </div>
@@ -125,13 +87,13 @@ const Investments: React.FC = () => {
               <div className="flex justify-between text-xs">
                 <span className="text-muted-foreground">Mínimo:</span>
                 <span className="text-foreground font-medium">
-                  Kz {plan.minAmount.toLocaleString('pt-AO')}
+                  Kz {Number(plan.min_amount).toLocaleString('pt-AO')}
                 </span>
               </div>
               <div className="flex justify-between text-xs mt-0.5">
                 <span className="text-muted-foreground">Máximo:</span>
                 <span className="text-foreground font-medium">
-                  Kz {plan.maxAmount.toLocaleString('pt-AO')}
+                  Kz {Number(plan.max_amount).toLocaleString('pt-AO')}
                 </span>
               </div>
             </div>
