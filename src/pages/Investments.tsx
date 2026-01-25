@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { 
   Home, 
@@ -8,10 +8,19 @@ import {
   ArrowLeft,
   Clock,
   Percent,
-  Zap
+  Zap,
+  CheckCircle
 } from 'lucide-react';
 import { toast } from 'sonner';
-import { useInvestmentPlans } from '@/hooks/useUserData';
+import { useInvestmentPlans, useBalance } from '@/hooks/useUserData';
+import { useCreateInvestment } from '@/hooks/useInvestment';
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+} from '@/components/ui/dialog';
 
 const bottomNavItems = [
   { icon: Home, label: 'Início', path: '/dashboard' },
@@ -20,12 +29,52 @@ const bottomNavItems = [
   { icon: User, label: 'Perfil', path: '/profile' },
 ];
 
+interface Plan {
+  id: string;
+  name: string;
+  min_amount: number;
+  max_amount: number;
+  daily_return: number;
+  duration_days: number;
+  color_class: string | null;
+}
+
 const Investments: React.FC = () => {
   const navigate = useNavigate();
   const { data: plans, isLoading } = useInvestmentPlans();
+  const { data: balance } = useBalance();
+  const createInvestment = useCreateInvestment();
+  
+  const [selectedPlan, setSelectedPlan] = useState<Plan | null>(null);
+  const [showConfirmDialog, setShowConfirmDialog] = useState(false);
+  const [showSuccessDialog, setShowSuccessDialog] = useState(false);
 
-  const handleInvest = (planId: string) => {
-    toast.info('Funcionalidade de investimento em breve!');
+  const handleInvest = (plan: Plan) => {
+    const availableBalance = balance?.balance || 0;
+    
+    if (availableBalance < plan.min_amount) {
+      toast.error(`Saldo insuficiente. Você precisa de Kz ${Number(plan.min_amount).toLocaleString('pt-AO')}`);
+      return;
+    }
+    
+    setSelectedPlan(plan);
+    setShowConfirmDialog(true);
+  };
+
+  const confirmInvestment = async () => {
+    if (!selectedPlan) return;
+
+    try {
+      await createInvestment.mutateAsync({
+        planId: selectedPlan.id,
+        amount: selectedPlan.min_amount,
+        durationDays: selectedPlan.duration_days,
+      });
+      setShowConfirmDialog(false);
+      setShowSuccessDialog(true);
+    } catch (error) {
+      toast.error('Erro ao criar investimento');
+    }
   };
 
   if (isLoading) {
@@ -96,7 +145,7 @@ const Investments: React.FC = () => {
 
             {/* Invest Button */}
             <button
-              onClick={() => handleInvest(plan.id)}
+              onClick={() => handleInvest(plan as Plan)}
               className="w-full btn-primary py-2"
             >
               Investir Agora
@@ -124,6 +173,81 @@ const Investments: React.FC = () => {
           ))}
         </div>
       </nav>
+
+      {/* Confirm Investment Dialog */}
+      <Dialog open={showConfirmDialog} onOpenChange={setShowConfirmDialog}>
+        <DialogContent className="glass-card border-foreground/10">
+          <DialogHeader>
+            <DialogTitle className="text-foreground">Confirmar Investimento</DialogTitle>
+            <DialogDescription className="text-muted-foreground">
+              Você está prestes a investir no plano {selectedPlan?.name}
+            </DialogDescription>
+          </DialogHeader>
+          {selectedPlan && (
+            <div className="space-y-3 mt-2">
+              <div className="bg-foreground/5 rounded-lg p-3 space-y-2">
+                <div className="flex justify-between text-sm">
+                  <span className="text-muted-foreground">Plano:</span>
+                  <span className="text-foreground font-medium">{selectedPlan.name}</span>
+                </div>
+                <div className="flex justify-between text-sm">
+                  <span className="text-muted-foreground">Investimento:</span>
+                  <span className="text-foreground font-medium">
+                    Kz {Number(selectedPlan.min_amount).toLocaleString('pt-AO')}
+                  </span>
+                </div>
+                <div className="flex justify-between text-sm">
+                  <span className="text-muted-foreground">Duração:</span>
+                  <span className="text-foreground font-medium">{selectedPlan.duration_days} dias</span>
+                </div>
+                <div className="flex justify-between text-sm">
+                  <span className="text-muted-foreground">Retorno Total:</span>
+                  <span className="text-success font-medium">
+                    Kz {(((Number(selectedPlan.daily_return) / 100) * Number(selectedPlan.min_amount)) * selectedPlan.duration_days).toLocaleString('pt-AO')}
+                  </span>
+                </div>
+              </div>
+              <div className="flex gap-2">
+                <button
+                  onClick={() => setShowConfirmDialog(false)}
+                  className="btn-outline flex-1"
+                >
+                  Cancelar
+                </button>
+                <button
+                  onClick={confirmInvestment}
+                  disabled={createInvestment.isPending}
+                  className="btn-primary flex-1 disabled:opacity-50"
+                >
+                  {createInvestment.isPending ? 'Processando...' : 'Confirmar'}
+                </button>
+              </div>
+            </div>
+          )}
+        </DialogContent>
+      </Dialog>
+
+      {/* Success Dialog */}
+      <Dialog open={showSuccessDialog} onOpenChange={setShowSuccessDialog}>
+        <DialogContent className="glass-card border-foreground/10 text-center">
+          <div className="py-4">
+            <CheckCircle className="w-16 h-16 text-success mx-auto mb-4" />
+            <h3 className="text-lg font-semibold text-foreground mb-2">Investimento Realizado!</h3>
+            <p className="text-sm text-muted-foreground mb-4">
+              Seu investimento no plano {selectedPlan?.name} foi criado com sucesso.
+            </p>
+            <button
+              onClick={() => {
+                setShowSuccessDialog(false);
+                navigate('/dashboard');
+              }}
+              className="btn-primary"
+            >
+              Voltar ao Início
+            </button>
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };

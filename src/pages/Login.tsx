@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Lock, Mail } from 'lucide-react';
+import { Lock, Phone } from 'lucide-react';
 import AuthLayout from '@/components/AuthLayout';
 import Logo from '@/components/Logo';
 import IconInput from '@/components/IconInput';
@@ -9,8 +9,8 @@ import { useAuth } from '@/hooks/useAuth';
 
 const Login: React.FC = () => {
   const navigate = useNavigate();
-  const { signIn, user } = useAuth();
-  const [email, setEmail] = useState('');
+  const { signInWithPhone, user } = useAuth();
+  const [phone, setPhone] = useState('');
   const [password, setPassword] = useState('');
   const [isLoading, setIsLoading] = useState(false);
 
@@ -24,17 +24,17 @@ const Login: React.FC = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    if (!email || !password) {
+    if (!phone || !password) {
       toast.error('Preencha todos os campos');
       return;
     }
 
     setIsLoading(true);
     
-    const { error } = await signIn(email, password);
+    const { error } = await signInWithPhone(phone, password);
     
     if (error) {
-      toast.error('Email ou senha incorretos');
+      toast.error('Telefone ou senha incorretos');
       setIsLoading(false);
       return;
     }
@@ -50,11 +50,11 @@ const Login: React.FC = () => {
         
         <form onSubmit={handleSubmit} className="space-y-3">
           <IconInput
-            icon={Mail}
-            type="email"
-            value={email}
-            onChange={setEmail}
-            placeholder="Email"
+            icon={Phone}
+            type="tel"
+            value={phone}
+            onChange={setPhone}
+            placeholder="Telefone (+244...)"
           />
           
           <IconInput

@@ -6,8 +6,8 @@ interface AuthContextType {
   user: User | null;
   session: Session | null;
   loading: boolean;
-  signUp: (email: string, password: string, phone: string, inviteCode?: string) => Promise<{ error: Error | null }>;
-  signIn: (email: string, password: string) => Promise<{ error: Error | null }>;
+  signUpWithPhone: (phone: string, password: string, inviteCode?: string) => Promise<{ error: Error | null }>;
+  signInWithPhone: (phone: string, password: string) => Promise<{ error: Error | null }>;
   signOut: () => Promise<void>;
 }
 
@@ -38,12 +38,11 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     return () => subscription.unsubscribe();
   }, []);
 
-  const signUp = async (email: string, password: string, phone: string, inviteCode?: string) => {
+  const signUpWithPhone = async (phone: string, password: string, inviteCode?: string) => {
     const { error } = await supabase.auth.signUp({
-      email,
+      phone,
       password,
       options: {
-        emailRedirectTo: window.location.origin,
         data: {
           phone,
           invite_code: inviteCode,
@@ -53,9 +52,9 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     return { error };
   };
 
-  const signIn = async (email: string, password: string) => {
+  const signInWithPhone = async (phone: string, password: string) => {
     const { error } = await supabase.auth.signInWithPassword({
-      email,
+      phone,
       password,
     });
     return { error };
@@ -66,7 +65,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   };
 
   return (
-    <AuthContext.Provider value={{ user, session, loading, signUp, signIn, signOut }}>
+    <AuthContext.Provider value={{ user, session, loading, signUpWithPhone, signInWithPhone, signOut }}>
       {children}
     </AuthContext.Provider>
   );

@@ -13,6 +13,8 @@ import Team from "./pages/Team";
 import Profile from "./pages/Profile";
 import Withdrawals from "./pages/Withdrawals";
 import Deposits from "./pages/Deposits";
+import DepositFlow from "./pages/DepositFlow";
+import WithdrawalFlow from "./pages/WithdrawalFlow";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -56,6 +58,16 @@ const App = () => (
             <Route path="/deposits" element={
               <ProtectedRoute>
                 <Deposits />
+              </ProtectedRoute>
+            } />
+            <Route path="/deposit" element={
+              <ProtectedRoute>
+                <DepositFlow />
+              </ProtectedRoute>
+            } />
+            <Route path="/withdrawal" element={
+              <ProtectedRoute>
+                <WithdrawalFlow />
               </ProtectedRoute>
             } />
             <Route path="*" element={<NotFound />} />

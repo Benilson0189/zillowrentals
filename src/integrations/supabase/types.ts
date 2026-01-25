@@ -50,6 +50,36 @@ export type Database = {
         }
         Relationships: []
       }
+      linked_accounts: {
+        Row: {
+          account_name: string
+          account_number: string
+          bank_name: string
+          created_at: string
+          id: string
+          is_default: boolean | null
+          user_id: string
+        }
+        Insert: {
+          account_name: string
+          account_number: string
+          bank_name: string
+          created_at?: string
+          id?: string
+          is_default?: boolean | null
+          user_id: string
+        }
+        Update: {
+          account_name?: string
+          account_number?: string
+          bank_name?: string
+          created_at?: string
+          id?: string
+          is_default?: boolean | null
+          user_id?: string
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           created_at: string
@@ -96,9 +126,11 @@ export type Database = {
           amount: number
           created_at: string
           id: string
+          linked_account_id: string | null
           notes: string | null
           payment_method: string | null
           processed_at: string | null
+          proof_url: string | null
           status: string
           type: string
           user_id: string
@@ -107,9 +139,11 @@ export type Database = {
           amount: number
           created_at?: string
           id?: string
+          linked_account_id?: string | null
           notes?: string | null
           payment_method?: string | null
           processed_at?: string | null
+          proof_url?: string | null
           status?: string
           type: string
           user_id: string
@@ -118,14 +152,24 @@ export type Database = {
           amount?: number
           created_at?: string
           id?: string
+          linked_account_id?: string | null
           notes?: string | null
           payment_method?: string | null
           processed_at?: string | null
+          proof_url?: string | null
           status?: string
           type?: string
           user_id?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "transactions_linked_account_id_fkey"
+            columns: ["linked_account_id"]
+            isOneToOne: false
+            referencedRelation: "linked_accounts"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       user_balances: {
         Row: {

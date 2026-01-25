@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
-import { Lock, User, Mail, Phone } from 'lucide-react';
+import { Lock, User, Phone } from 'lucide-react';
 import AuthLayout from '@/components/AuthLayout';
 import Logo from '@/components/Logo';
 import IconInput from '@/components/IconInput';
@@ -9,13 +9,13 @@ import { useAuth } from '@/hooks/useAuth';
 
 const Register: React.FC = () => {
   const navigate = useNavigate();
-  const { signUp, user } = useAuth();
+  const { signUpWithPhone, user } = useAuth();
   const [searchParams] = useSearchParams();
   const inviteCode = searchParams.get('inviteCode') || '';
 
-  const [email, setEmail] = useState('');
   const [phone, setPhone] = useState('');
   const [password, setPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
   const [code, setCode] = useState(inviteCode);
   const [isLoading, setIsLoading] = useState(false);
 
@@ -29,7 +29,7 @@ const Register: React.FC = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    if (!email || !password || !phone) {
+    if (!phone || !password) {
       toast.error('Preencha todos os campos obrigatórios');
       return;
     }
@@ -39,9 +39,20 @@ const Register: React.FC = () => {
       return;
     }
 
+    if (password !== confirmPassword) {
+      toast.error('As senhas não coincidem');
+      return;
+    }
+
+    // Validate phone number format
+    if (!phone.startsWith('+')) {
+      toast.error('Digite o telefone com código do país (ex: +244...)');
+      return;
+    }
+
     setIsLoading(true);
     
-    const { error } = await signUp(email, password, phone, code);
+    const { error } = await signUpWithPhone(phone, password, code);
     
     if (error) {
       toast.error(error.message || 'Erro ao criar conta');
@@ -60,14 +71,6 @@ const Register: React.FC = () => {
         
         <form onSubmit={handleSubmit} className="space-y-3">
           <IconInput
-            icon={Mail}
-            type="email"
-            value={email}
-            onChange={setEmail}
-            placeholder="Email"
-          />
-
-          <IconInput
             icon={Phone}
             type="tel"
             value={phone}
@@ -81,6 +84,14 @@ const Register: React.FC = () => {
             value={password}
             onChange={setPassword}
             placeholder="Senha (mínimo 6 caracteres)"
+          />
+
+          <IconInput
+            icon={Lock}
+            type="password"
+            value={confirmPassword}
+            onChange={setConfirmPassword}
+            placeholder="Confirmar Senha"
           />
           
           <IconInput
