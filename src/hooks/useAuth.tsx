@@ -38,9 +38,16 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     return () => subscription.unsubscribe();
   }, []);
 
+  // Convert phone to email format for authentication (phone@kraken.app)
+  const phoneToEmail = (phone: string) => {
+    const cleanPhone = phone.replace(/\D/g, '');
+    return `${cleanPhone}@kraken.app`;
+  };
+
   const signUpWithPhone = async (phone: string, password: string, inviteCode?: string) => {
+    const email = phoneToEmail(phone);
     const { error } = await supabase.auth.signUp({
-      phone,
+      email,
       password,
       options: {
         data: {
@@ -53,8 +60,9 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   };
 
   const signInWithPhone = async (phone: string, password: string) => {
+    const email = phoneToEmail(phone);
     const { error } = await supabase.auth.signInWithPassword({
-      phone,
+      email,
       password,
     });
     return { error };
