@@ -14,6 +14,7 @@ import {
   ChevronUp
 } from 'lucide-react';
 import { toast } from 'sonner';
+import { useProfile, useTeamMembers } from '@/hooks/useUserData';
 
 const bottomNavItems = [
   { icon: Home, label: 'Início', path: '/dashboard' },
@@ -22,78 +23,17 @@ const bottomNavItems = [
   { icon: User, label: 'Perfil', path: '/profile' },
 ];
 
-// Mock data - será substituído por dados reais do banco
-const teamStats = {
-  level1: { total: 12, active: 8 },
-  levelB: { total: 45, active: 28 },
-  levelC: { total: 120, active: 67 },
-};
-
-const invitedUsers = [
-  {
-    id: 'USR001',
-    name: 'João Silva',
-    phone: '+244 9** *** **4',
-    level: 1,
-    isActive: true,
-    activeInvestments: [
-      { plan: 'Plano Ouro', amount: 250000, dailyReturn: 3.5 },
-    ],
-    joinedAt: '2024-01-15',
-  },
-  {
-    id: 'USR002',
-    name: 'Maria Santos',
-    phone: '+244 9** *** **8',
-    level: 1,
-    isActive: true,
-    activeInvestments: [
-      { plan: 'Plano Prata', amount: 100000, dailyReturn: 3.0 },
-      { plan: 'Plano Básico', amount: 20000, dailyReturn: 2.5 },
-    ],
-    joinedAt: '2024-01-20',
-  },
-  {
-    id: 'USR003',
-    name: 'Pedro Nunes',
-    phone: '+244 9** *** **2',
-    level: 1,
-    isActive: false,
-    activeInvestments: [],
-    joinedAt: '2024-02-01',
-  },
-  {
-    id: 'USR004',
-    name: 'Ana Costa',
-    phone: '+244 9** *** **6',
-    level: 2,
-    isActive: true,
-    activeInvestments: [
-      { plan: 'Plano Diamante', amount: 600000, dailyReturn: 4.0 },
-    ],
-    joinedAt: '2024-01-25',
-  },
-  {
-    id: 'USR005',
-    name: 'Carlos Mendes',
-    phone: '+244 9** *** **1',
-    level: 3,
-    isActive: true,
-    activeInvestments: [
-      { plan: 'Plano VIP', amount: 3000000, dailyReturn: 5.0 },
-    ],
-    joinedAt: '2024-02-10',
-  },
-];
-
 const Team: React.FC = () => {
   const navigate = useNavigate();
   const [copied, setCopied] = useState(false);
   const [expandedUser, setExpandedUser] = useState<string | null>(null);
   const [filterLevel, setFilterLevel] = useState<number | null>(null);
 
-  const inviteCode = 'ABC123XYZ';
-  const inviteLink = `https://app.exemplo.com/register?inviteCode=${inviteCode}`;
+  const { data: profile } = useProfile();
+  const { data: teamData, isLoading } = useTeamMembers();
+
+  const inviteCode = profile?.invite_code || '';
+  const inviteLink = `${window.location.origin}/register?inviteCode=${inviteCode}`;
 
   const handleCopyLink = () => {
     navigator.clipboard.writeText(inviteLink);
@@ -102,12 +42,33 @@ const Team: React.FC = () => {
     setTimeout(() => setCopied(false), 2000);
   };
 
-  const filteredUsers = filterLevel 
-    ? invitedUsers.filter(u => u.level === filterLevel)
-    : invitedUsers;
+  const level1 = teamData?.level1 || [];
+  const levelB = teamData?.levelB || [];
+  const levelC = teamData?.levelC || [];
 
-  const totalActive = teamStats.level1.active + teamStats.levelB.active + teamStats.levelC.active;
-  const totalInvited = teamStats.level1.total + teamStats.levelB.total + teamStats.levelC.total;
+  const totalActive = 0; // Would need to check investments for each user
+  const totalInvited = level1.length + levelB.length + levelC.length;
+
+  const getFilteredUsers = () => {
+    if (filterLevel === 1) return level1.map(u => ({ ...u, level: 1 }));
+    if (filterLevel === 2) return levelB.map(u => ({ ...u, level: 2 }));
+    if (filterLevel === 3) return levelC.map(u => ({ ...u, level: 3 }));
+    return [
+      ...level1.map(u => ({ ...u, level: 1 })),
+      ...levelB.map(u => ({ ...u, level: 2 })),
+      ...levelC.map(u => ({ ...u, level: 3 })),
+    ];
+  };
+
+  const filteredUsers = getFilteredUsers();
+
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-secondary"></div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-background pb-20">
@@ -164,24 +125,24 @@ const Team: React.FC = () => {
           className={`glass-card p-2 text-center transition-colors ${filterLevel === 1 ? 'ring-2 ring-secondary' : ''}`}
         >
           <p className="text-[10px] text-muted-foreground mb-0.5">Nível 1</p>
-          <p className="text-sm font-bold text-foreground">{teamStats.level1.total}</p>
-          <p className="text-[10px] text-success">{teamStats.level1.active} ativos</p>
+          <p className="text-sm font-bold text-foreground">{level1.length}</p>
+          <p className="text-[10px] text-success">0 ativos</p>
         </button>
         <button
           onClick={() => setFilterLevel(filterLevel === 2 ? null : 2)}
           className={`glass-card p-2 text-center transition-colors ${filterLevel === 2 ? 'ring-2 ring-secondary' : ''}`}
         >
           <p className="text-[10px] text-muted-foreground mb-0.5">Nível B</p>
-          <p className="text-sm font-bold text-foreground">{teamStats.levelB.total}</p>
-          <p className="text-[10px] text-success">{teamStats.levelB.active} ativos</p>
+          <p className="text-sm font-bold text-foreground">{levelB.length}</p>
+          <p className="text-[10px] text-success">0 ativos</p>
         </button>
         <button
           onClick={() => setFilterLevel(filterLevel === 3 ? null : 3)}
           className={`glass-card p-2 text-center transition-colors ${filterLevel === 3 ? 'ring-2 ring-secondary' : ''}`}
         >
           <p className="text-[10px] text-muted-foreground mb-0.5">Nível C</p>
-          <p className="text-sm font-bold text-foreground">{teamStats.levelC.total}</p>
-          <p className="text-[10px] text-success">{teamStats.levelC.active} ativos</p>
+          <p className="text-sm font-bold text-foreground">{levelC.length}</p>
+          <p className="text-[10px] text-success">0 ativos</p>
         </button>
       </div>
 
@@ -191,83 +152,65 @@ const Team: React.FC = () => {
           Convidados {filterLevel ? `(Nível ${filterLevel === 1 ? '1' : filterLevel === 2 ? 'B' : 'C'})` : ''}
         </h2>
         
-        <div className="space-y-2">
-          {filteredUsers.map((user) => (
-            <div key={user.id} className="glass-card overflow-hidden">
-              <button
-                onClick={() => setExpandedUser(expandedUser === user.id ? null : user.id)}
-                className="w-full p-3 flex items-center justify-between"
-              >
-                <div className="flex items-center gap-2">
-                  <div className={`w-8 h-8 rounded-full flex items-center justify-center ${
-                    user.isActive ? 'bg-success/20' : 'bg-muted/20'
-                  }`}>
-                    {user.isActive ? (
-                      <UserCheck className="w-4 h-4 text-success" />
-                    ) : (
+        {filteredUsers.length === 0 ? (
+          <div className="glass-card p-4 text-center">
+            <p className="text-sm text-muted-foreground">Nenhum convidado ainda</p>
+            <p className="text-xs text-muted-foreground mt-1">Compartilhe seu link para convidar amigos!</p>
+          </div>
+        ) : (
+          <div className="space-y-2">
+            {filteredUsers.map((user) => (
+              <div key={user.id} className="glass-card overflow-hidden">
+                <button
+                  onClick={() => setExpandedUser(expandedUser === user.id ? null : user.id)}
+                  className="w-full p-3 flex items-center justify-between"
+                >
+                  <div className="flex items-center gap-2">
+                    <div className="w-8 h-8 rounded-full flex items-center justify-center bg-muted/20">
                       <UserX className="w-4 h-4 text-muted-foreground" />
+                    </div>
+                    <div className="text-left">
+                      <p className="text-sm font-medium text-foreground">
+                        {user.full_name || 'Usuário'}
+                      </p>
+                      <p className="text-[10px] text-muted-foreground">
+                        Nível {user.level === 1 ? '1' : user.level === 2 ? 'B' : 'C'}
+                      </p>
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-1.5">
+                    {expandedUser === user.id ? (
+                      <ChevronUp className="w-4 h-4 text-muted-foreground" />
+                    ) : (
+                      <ChevronDown className="w-4 h-4 text-muted-foreground" />
                     )}
                   </div>
-                  <div className="text-left">
-                    <p className="text-sm font-medium text-foreground">{user.name}</p>
-                    <p className="text-[10px] text-muted-foreground">ID: {user.id} • Nível {user.level === 1 ? '1' : user.level === 2 ? 'B' : 'C'}</p>
-                  </div>
-                </div>
-                <div className="flex items-center gap-1.5">
-                  {user.isActive && (
-                    <span className="text-[10px] bg-success/20 text-success px-1.5 py-0.5 rounded-full">
-                      Ativo
-                    </span>
-                  )}
-                  {expandedUser === user.id ? (
-                    <ChevronUp className="w-4 h-4 text-muted-foreground" />
-                  ) : (
-                    <ChevronDown className="w-4 h-4 text-muted-foreground" />
-                  )}
-                </div>
-              </button>
+                </button>
 
-              {/* Expanded Details */}
-              {expandedUser === user.id && (
-                <div className="px-3 pb-3 border-t border-foreground/5 pt-2">
-                  <div className="text-xs space-y-1.5">
-                    <div className="flex justify-between">
-                      <span className="text-muted-foreground">Telefone:</span>
-                      <span className="text-foreground">{user.phone}</span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span className="text-muted-foreground">Cadastro:</span>
-                      <span className="text-foreground">{user.joinedAt}</span>
-                    </div>
-                  </div>
-
-                  {user.activeInvestments.length > 0 ? (
-                    <div className="mt-2">
-                      <p className="text-xs font-medium text-foreground mb-1.5">Investimentos Ativos:</p>
-                      <div className="space-y-1.5">
-                        {user.activeInvestments.map((inv, idx) => (
-                          <div key={idx} className="bg-foreground/5 rounded-lg p-2">
-                            <div className="flex justify-between items-center">
-                              <span className="text-xs font-medium text-foreground">{inv.plan}</span>
-                              <span className="text-[10px] text-success">{inv.dailyReturn}%/dia</span>
-                            </div>
-                            <p className="text-xs text-secondary mt-0.5">
-                              Kz {inv.amount.toLocaleString('pt-AO')}
-                            </p>
-                          </div>
-                        ))}
+                {/* Expanded Details */}
+                {expandedUser === user.id && (
+                  <div className="px-3 pb-3 border-t border-foreground/5 pt-2">
+                    <div className="text-xs space-y-1.5">
+                      <div className="flex justify-between">
+                        <span className="text-muted-foreground">Telefone:</span>
+                        <span className="text-foreground">{user.phone || 'N/A'}</span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span className="text-muted-foreground">Cadastro:</span>
+                        <span className="text-foreground">
+                          {new Date(user.created_at).toLocaleDateString('pt-AO')}
+                        </span>
                       </div>
                     </div>
-                  ) : (
                     <div className="mt-2 bg-foreground/5 rounded-lg p-2 text-center">
                       <p className="text-xs text-muted-foreground">Sem investimentos ativos</p>
                     </div>
-                  )}
-                </div>
-              )}
-            </div>
-          ))}
-        </div>
+                  </div>
+                )}
+              </div>
+            ))}
+          </div>
+        )}
       </div>
 
       {/* Bottom Navigation */}
