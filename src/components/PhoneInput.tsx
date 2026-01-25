@@ -4,19 +4,30 @@ import { Phone, ChevronDown } from 'lucide-react';
 interface PhoneInputProps {
   value: string;
   onChange: (value: string) => void;
+  countryCode: string;
+  onCountryCodeChange: (code: string) => void;
   placeholder?: string;
 }
 
 const countryCodes = [
-  { code: '+244', country: 'AO', flag: '🇦🇴' },
-  { code: '+55', country: 'BR', flag: '🇧🇷' },
-  { code: '+351', country: 'PT', flag: '🇵🇹' },
-  { code: '+1', country: 'US', flag: '🇺🇸' },
+  { code: '+244', country: 'Angola', flag: '🇦🇴' },
+  { code: '+55', country: 'Brasil', flag: '🇧🇷' },
+  { code: '+351', country: 'Portugal', flag: '🇵🇹' },
+  { code: '+258', country: 'Moçambique', flag: '🇲🇿' },
+  { code: '+238', country: 'Cabo Verde', flag: '🇨🇻' },
+  { code: '+1', country: 'EUA', flag: '🇺🇸' },
 ];
 
-const PhoneInput: React.FC<PhoneInputProps> = ({ value, onChange, placeholder = 'Número de telefone' }) => {
-  const [selectedCode, setSelectedCode] = useState(countryCodes[0]);
+const PhoneInput: React.FC<PhoneInputProps> = ({ 
+  value, 
+  onChange, 
+  countryCode, 
+  onCountryCodeChange,
+  placeholder = 'Número de telefone' 
+}) => {
   const [showDropdown, setShowDropdown] = useState(false);
+  
+  const selectedCountry = countryCodes.find(c => c.code === countryCode) || countryCodes[0];
 
   return (
     <div className="icon-input-wrapper">
@@ -26,34 +37,34 @@ const PhoneInput: React.FC<PhoneInputProps> = ({ value, onChange, placeholder = 
           <button
             type="button"
             onClick={() => setShowDropdown(!showDropdown)}
-            className="flex items-center gap-1 pr-2 border-r border-white/10 mr-2 text-foreground"
+            className="flex items-center gap-1 pr-2 border-r border-white/10 mr-2 text-foreground shrink-0"
           >
-            <span>{selectedCode.flag}</span>
-            <span className="text-sm">{selectedCode.code}</span>
+            <span>{selectedCountry.flag}</span>
+            <span className="text-sm">{selectedCountry.code}</span>
             <ChevronDown className="w-3 h-3 text-muted-foreground" />
           </button>
           <input
             type="tel"
             value={value}
-            onChange={(e) => onChange(e.target.value)}
+            onChange={(e) => onChange(e.target.value.replace(/\D/g, ''))}
             placeholder={placeholder}
-            className="flex-1 bg-transparent outline-none text-foreground placeholder:text-muted-foreground"
+            className="flex-1 bg-transparent outline-none text-foreground placeholder:text-muted-foreground min-w-0"
           />
         </div>
         {showDropdown && (
-          <div className="absolute top-full left-0 mt-1 w-full glass-card p-2 z-10">
+          <div className="absolute top-full left-0 mt-1 w-full bg-card border border-border rounded-lg shadow-lg p-2 z-50">
             {countryCodes.map((country) => (
               <button
                 key={country.code}
                 type="button"
                 onClick={() => {
-                  setSelectedCode(country);
+                  onCountryCodeChange(country.code);
                   setShowDropdown(false);
                 }}
-                className="w-full flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-white/10 text-foreground"
+                className="w-full flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-accent text-foreground transition-colors"
               >
                 <span>{country.flag}</span>
-                <span>{country.code}</span>
+                <span className="font-medium">{country.code}</span>
                 <span className="text-muted-foreground text-sm">{country.country}</span>
               </button>
             ))}

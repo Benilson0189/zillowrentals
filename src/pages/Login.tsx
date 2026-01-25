@@ -1,9 +1,10 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Lock, Phone } from 'lucide-react';
+import { Lock, Eye, EyeOff } from 'lucide-react';
 import AuthLayout from '@/components/AuthLayout';
 import Logo from '@/components/Logo';
 import IconInput from '@/components/IconInput';
+import PhoneInput from '@/components/PhoneInput';
 import { toast } from 'sonner';
 import { useAuth } from '@/hooks/useAuth';
 
@@ -11,8 +12,10 @@ const Login: React.FC = () => {
   const navigate = useNavigate();
   const { signInWithPhone, user } = useAuth();
   const [phone, setPhone] = useState('');
+  const [countryCode, setCountryCode] = useState('+244');
   const [password, setPassword] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
 
   // Redirect if already logged in
   React.useEffect(() => {
@@ -29,9 +32,11 @@ const Login: React.FC = () => {
       return;
     }
 
+    const fullPhone = `${countryCode}${phone}`;
+
     setIsLoading(true);
     
-    const { error } = await signInWithPhone(phone, password);
+    const { error } = await signInWithPhone(fullPhone, password);
     
     if (error) {
       toast.error('Telefone ou senha incorretos');
@@ -49,21 +54,30 @@ const Login: React.FC = () => {
         <Logo />
         
         <form onSubmit={handleSubmit} className="space-y-3">
-          <IconInput
-            icon={Phone}
-            type="tel"
+          <PhoneInput
             value={phone}
             onChange={setPhone}
-            placeholder="Telefone (+244...)"
+            countryCode={countryCode}
+            onCountryCodeChange={setCountryCode}
+            placeholder="Número de telefone"
           />
           
-          <IconInput
-            icon={Lock}
-            type="password"
-            value={password}
-            onChange={setPassword}
-            placeholder="Senha"
-          />
+          <div className="relative">
+            <IconInput
+              icon={Lock}
+              type={showPassword ? 'text' : 'password'}
+              value={password}
+              onChange={setPassword}
+              placeholder="Senha"
+            />
+            <button
+              type="button"
+              onClick={() => setShowPassword(!showPassword)}
+              className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
+            >
+              {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
+            </button>
+          </div>
           
           <div className="text-right">
             <button
