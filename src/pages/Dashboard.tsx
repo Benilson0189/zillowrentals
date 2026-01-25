@@ -15,11 +15,14 @@ import {
 } from 'lucide-react';
 import { toast } from 'sonner';
 
-const menuItems = [
+const bottomNavItems = [
   { icon: Home, label: 'Início', active: true },
   { icon: Wallet, label: 'Carteira' },
   { icon: TrendingUp, label: 'Investimentos' },
   { icon: Users, label: 'Equipe' },
+];
+
+const menuItems = [
   { icon: Gift, label: 'Bônus' },
   { icon: Settings, label: 'Configurações' },
 ];
@@ -128,7 +131,7 @@ const Dashboard: React.FC = () => {
       </div>
 
       {/* Menu */}
-      <div className="glass-card mx-4 mt-4 mb-4 overflow-hidden">
+      <div className="glass-card mx-4 mt-4 mb-24 overflow-hidden">
         {menuItems.map((item, index) => (
           <button
             key={item.label}
@@ -137,8 +140,8 @@ const Dashboard: React.FC = () => {
             }`}
           >
             <div className="flex items-center gap-3">
-              <item.icon className={`w-5 h-5 ${item.active ? 'text-primary' : 'text-muted-foreground'}`} />
-              <span className={item.active ? 'text-foreground font-medium' : 'text-muted-foreground'}>
+              <item.icon className="w-5 h-5 text-muted-foreground" />
+              <span className="text-muted-foreground">
                 {item.label}
               </span>
             </div>
@@ -157,6 +160,25 @@ const Dashboard: React.FC = () => {
           <ChevronRight className="w-5 h-5" />
         </button>
       </div>
+
+      {/* Bottom Navigation */}
+      <nav className="fixed bottom-0 left-0 right-0 glass-card border-t border-white/10 px-2 py-2 z-50">
+        <div className="flex items-center justify-around">
+          {bottomNavItems.map((item) => (
+            <button
+              key={item.label}
+              className={`flex flex-col items-center gap-1 px-4 py-2 rounded-xl transition-colors ${
+                item.active 
+                  ? 'text-primary bg-primary/10' 
+                  : 'text-muted-foreground hover:text-foreground'
+              }`}
+            >
+              <item.icon className="w-5 h-5" />
+              <span className="text-xs font-medium">{item.label}</span>
+            </button>
+          ))}
+        </div>
+      </nav>
     </div>
   );
 };
