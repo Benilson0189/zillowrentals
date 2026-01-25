@@ -16,10 +16,10 @@ import {
 import { toast } from 'sonner';
 
 const bottomNavItems = [
-  { icon: Home, label: 'Início', active: true },
-  { icon: TrendingUp, label: 'Investimentos' },
-  { icon: Users, label: 'Equipe' },
-  { icon: User, label: 'Perfil' },
+  { icon: Home, label: 'Início', path: '/dashboard', active: true },
+  { icon: TrendingUp, label: 'Investimentos', path: '/investments' },
+  { icon: Users, label: 'Equipe', path: '/team' },
+  { icon: User, label: 'Perfil', path: '/profile' },
 ];
 
 const Dashboard: React.FC = () => {
@@ -134,6 +134,7 @@ const Dashboard: React.FC = () => {
           {bottomNavItems.map((item) => (
             <button
               key={item.label}
+              onClick={() => navigate(item.path)}
               className={`flex flex-col items-center gap-1 px-4 py-2 rounded-xl transition-colors ${
                 item.active 
                   ? 'text-primary bg-primary/10' 
