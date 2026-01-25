@@ -20,14 +20,14 @@ const IconInput: React.FC<IconInputProps> = ({
 }) => {
   return (
     <div className="icon-input-wrapper">
-      <Icon className="icon w-5 h-5" />
+      <Icon className="icon w-4 h-4" />
       <input
         type={type}
         value={value}
         onChange={(e) => onChange(e.target.value)}
         placeholder={placeholder}
         readOnly={readOnly}
-        className="input-dark w-full pl-12"
+        className="input-dark w-full pl-10"
       />
     </div>
   );
