@@ -5,8 +5,8 @@ import {
   Wallet, 
   TrendingUp, 
   Users, 
-  Gift, 
-  Settings, 
+  User,
+  Gift,
   LogOut,
   ChevronRight,
   Bell,
@@ -17,14 +17,9 @@ import { toast } from 'sonner';
 
 const bottomNavItems = [
   { icon: Home, label: 'Início', active: true },
-  { icon: Wallet, label: 'Carteira' },
   { icon: TrendingUp, label: 'Investimentos' },
   { icon: Users, label: 'Equipe' },
-];
-
-const menuItems = [
-  { icon: Gift, label: 'Bônus' },
-  { icon: Settings, label: 'Configurações' },
+  { icon: User, label: 'Perfil' },
 ];
 
 const Dashboard: React.FC = () => {
@@ -130,36 +125,8 @@ const Dashboard: React.FC = () => {
         </div>
       </div>
 
-      {/* Menu */}
-      <div className="glass-card mx-4 mt-4 mb-24 overflow-hidden">
-        {menuItems.map((item, index) => (
-          <button
-            key={item.label}
-            className={`w-full flex items-center justify-between p-4 hover:bg-white/5 transition-colors ${
-              index !== menuItems.length - 1 ? 'border-b border-white/5' : ''
-            }`}
-          >
-            <div className="flex items-center gap-3">
-              <item.icon className="w-5 h-5 text-muted-foreground" />
-              <span className="text-muted-foreground">
-                {item.label}
-              </span>
-            </div>
-            <ChevronRight className="w-5 h-5 text-muted-foreground" />
-          </button>
-        ))}
-        
-        <button
-          onClick={handleLogout}
-          className="w-full flex items-center justify-between p-4 hover:bg-white/5 transition-colors text-destructive"
-        >
-          <div className="flex items-center gap-3">
-            <LogOut className="w-5 h-5" />
-            <span>Sair</span>
-          </div>
-          <ChevronRight className="w-5 h-5" />
-        </button>
-      </div>
+      {/* Spacer for bottom nav */}
+      <div className="h-24"></div>
 
       {/* Bottom Navigation */}
       <nav className="fixed bottom-0 left-0 right-0 glass-card border-t border-white/10 px-2 py-2 z-50">
