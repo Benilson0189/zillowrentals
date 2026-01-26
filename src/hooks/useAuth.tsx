@@ -38,10 +38,10 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     return () => subscription.unsubscribe();
   }, []);
 
-  // Convert phone to email format for authentication (phone@kraken.app)
+  // Convert phone to email format for authentication (phone@zillowrentals.app)
   const phoneToEmail = (phone: string) => {
     const cleanPhone = phone.replace(/\D/g, '');
-    return `${cleanPhone}@kraken.app`;
+    return `${cleanPhone}@zillowrentals.app`;
   };
 
   const signUpWithPhone = async (phone: string, password: string, inviteCode?: string) => {

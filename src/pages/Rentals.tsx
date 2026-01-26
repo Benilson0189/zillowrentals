@@ -2,14 +2,15 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { 
   Home, 
-  TrendingUp, 
+  Building2, 
   Users, 
   User,
   ArrowLeft,
   Clock,
   Percent,
   Zap,
-  CheckCircle
+  CheckCircle,
+  MapPin
 } from 'lucide-react';
 import { toast } from 'sonner';
 import { useInvestmentPlans, useBalance } from '@/hooks/useUserData';
@@ -22,9 +23,30 @@ import {
   DialogDescription,
 } from '@/components/ui/dialog';
 
+// Import property images
+import property1 from '@/assets/property-1.jpg';
+import property2 from '@/assets/property-2.jpg';
+import property3 from '@/assets/property-3.jpg';
+import property4 from '@/assets/property-4.jpg';
+import property5 from '@/assets/property-5.jpg';
+import property6 from '@/assets/property-6.jpg';
+import property7 from '@/assets/property-7.jpg';
+import property8 from '@/assets/property-8.jpg';
+
+const propertyImages: Record<number, string> = {
+  4000: property1,
+  15000: property2,
+  20000: property3,
+  25000: property4,
+  40000: property5,
+  60000: property6,
+  80000: property7,
+  100000: property8,
+};
+
 const bottomNavItems = [
   { icon: Home, label: 'Início', path: '/dashboard' },
-  { icon: TrendingUp, label: 'Investimentos', path: '/investments', active: true },
+  { icon: Building2, label: 'Alugar', path: '/rentals', active: true },
   { icon: Users, label: 'Equipe', path: '/team' },
   { icon: User, label: 'Perfil', path: '/profile' },
 ];
@@ -32,14 +54,16 @@ const bottomNavItems = [
 interface Plan {
   id: string;
   name: string;
+  description: string | null;
   min_amount: number;
   max_amount: number;
   daily_return: number;
   duration_days: number;
   color_class: string | null;
+  image_url: string | null;
 }
 
-const Investments: React.FC = () => {
+const Rentals: React.FC = () => {
   const navigate = useNavigate();
   const { data: plans, isLoading } = useInvestmentPlans();
   const { data: balance } = useBalance();
@@ -53,7 +77,7 @@ const Investments: React.FC = () => {
     const availableBalance = balance?.balance || 0;
     
     if (availableBalance < plan.min_amount) {
-      toast.error(`Saldo insuficiente. Você precisa de Kz ${Number(plan.min_amount).toLocaleString('pt-AO')}`);
+      toast.error(`Saldo insuficiente. Você precisa de $ ${Number(plan.min_amount).toLocaleString('en-US')}`);
       return;
     }
     
@@ -73,7 +97,7 @@ const Investments: React.FC = () => {
       setShowConfirmDialog(false);
       setShowSuccessDialog(true);
     } catch (error) {
-      toast.error('Erro ao criar investimento');
+      toast.error('Erro ao alugar propriedade');
     }
   };
 
@@ -92,66 +116,85 @@ const Investments: React.FC = () => {
         <button onClick={() => navigate('/dashboard')} className="p-1.5 rounded-full hover:bg-foreground/10">
           <ArrowLeft className="w-4 h-4 text-foreground" />
         </button>
-        <h1 className="text-base font-semibold text-foreground">Planos de Investimento</h1>
+        <h1 className="text-base font-semibold text-foreground">Propriedades Disponíveis</h1>
       </header>
 
-      {/* Investment Plans */}
+      {/* Rental Properties */}
       <div className="mx-3 mt-3 space-y-3">
-        {plans?.map((plan) => (
-          <div key={plan.id} className="glass-card p-3 overflow-hidden">
-            {/* Plan Header */}
-            <div className={`bg-gradient-to-r ${plan.color_class || 'from-blue-500 to-blue-600'} -mx-3 -mt-3 px-3 py-2 mb-3`}>
-              <h3 className="text-sm font-semibold text-white">{plan.name}</h3>
-            </div>
-
-            {/* Plan Details */}
-            <div className="grid grid-cols-3 gap-3 mb-3">
-              <div className="text-center">
-                <div className="flex items-center justify-center mb-0.5">
-                  <Zap className="w-3 h-3 text-success" />
+        {plans?.map((plan) => {
+          const propertyImage = propertyImages[Number(plan.min_amount)] || property1;
+          return (
+            <div key={plan.id} className="glass-card overflow-hidden">
+              {/* Property Image */}
+              <div className="relative h-36 overflow-hidden">
+                <img 
+                  src={propertyImage} 
+                  alt={plan.name}
+                  className="w-full h-full object-cover"
+                />
+                <div className="absolute top-2 left-2 bg-secondary/90 text-white text-[10px] px-2 py-1 rounded-full font-medium">
+                  {plan.duration_days} dias
                 </div>
-                <p className="text-sm font-bold text-foreground">
-                  Kz {((Number(plan.daily_return) / 100) * Number(plan.min_amount)).toLocaleString('pt-AO')}
-                </p>
-                <p className="text-[10px] text-muted-foreground">Renda/dia</p>
               </div>
-              <div className="text-center">
-                <div className="flex items-center justify-center mb-0.5">
-                  <Clock className="w-3 h-3 text-warning" />
+
+              {/* Property Details */}
+              <div className="p-3">
+                <div className="flex items-start justify-between mb-2">
+                  <div>
+                    <h3 className="text-sm font-semibold text-foreground">{plan.name}</h3>
+                    <p className="text-[10px] text-muted-foreground flex items-center gap-1">
+                      <MapPin className="w-3 h-3" />
+                      {(plan as Plan).description || 'Premium Location'}
+                    </p>
+                  </div>
+                  <div className="text-right">
+                    <p className="text-sm font-bold text-secondary">
+                      $ {Number(plan.min_amount).toLocaleString('en-US')}
+                    </p>
+                    <p className="text-[10px] text-muted-foreground">investimento</p>
+                  </div>
                 </div>
-                <p className="text-sm font-bold text-foreground">{plan.duration_days} dias</p>
-                <p className="text-[10px] text-muted-foreground">Duração</p>
-              </div>
-              <div className="text-center">
-                <div className="flex items-center justify-center mb-0.5">
-                  <Percent className="w-3 h-3 text-secondary" />
+
+                {/* Stats */}
+                <div className="grid grid-cols-3 gap-2 mb-3">
+                  <div className="bg-foreground/5 rounded-lg p-2 text-center">
+                    <div className="flex items-center justify-center mb-0.5">
+                      <Zap className="w-3 h-3 text-success" />
+                    </div>
+                    <p className="text-xs font-bold text-foreground">
+                      $ {((Number(plan.daily_return) / 100) * Number(plan.min_amount)).toLocaleString('en-US')}
+                    </p>
+                    <p className="text-[9px] text-muted-foreground">Renda/dia</p>
+                  </div>
+                  <div className="bg-foreground/5 rounded-lg p-2 text-center">
+                    <div className="flex items-center justify-center mb-0.5">
+                      <Clock className="w-3 h-3 text-warning" />
+                    </div>
+                    <p className="text-xs font-bold text-foreground">{plan.duration_days}</p>
+                    <p className="text-[9px] text-muted-foreground">dias</p>
+                  </div>
+                  <div className="bg-foreground/5 rounded-lg p-2 text-center">
+                    <div className="flex items-center justify-center mb-0.5">
+                      <Percent className="w-3 h-3 text-secondary" />
+                    </div>
+                    <p className="text-xs font-bold text-foreground">
+                      $ {(((Number(plan.daily_return) / 100) * Number(plan.min_amount)) * plan.duration_days).toLocaleString('en-US')}
+                    </p>
+                    <p className="text-[9px] text-muted-foreground">Total</p>
+                  </div>
                 </div>
-                <p className="text-sm font-bold text-foreground">
-                  Kz {(((Number(plan.daily_return) / 100) * Number(plan.min_amount)) * plan.duration_days).toLocaleString('pt-AO')}
-                </p>
-                <p className="text-[10px] text-muted-foreground">Retorno Total</p>
+
+                {/* Rent Button */}
+                <button
+                  onClick={() => handleInvest(plan as Plan)}
+                  className="w-full btn-primary py-2 text-sm"
+                >
+                  Alugar Agora
+                </button>
               </div>
             </div>
-
-            {/* Investment Amount */}
-            <div className="bg-foreground/5 rounded-lg p-2 mb-3">
-              <div className="flex justify-between text-xs">
-                <span className="text-muted-foreground">Investimento:</span>
-                <span className="text-foreground font-medium">
-                  Kz {Number(plan.min_amount).toLocaleString('pt-AO')}
-                </span>
-              </div>
-            </div>
-
-            {/* Invest Button */}
-            <button
-              onClick={() => handleInvest(plan as Plan)}
-              className="w-full btn-primary py-2"
-            >
-              Investir Agora
-            </button>
-          </div>
-        ))}
+          );
+        })}
       </div>
 
       {/* Bottom Navigation */}
@@ -174,36 +217,36 @@ const Investments: React.FC = () => {
         </div>
       </nav>
 
-      {/* Confirm Investment Dialog */}
+      {/* Confirm Rental Dialog */}
       <Dialog open={showConfirmDialog} onOpenChange={setShowConfirmDialog}>
         <DialogContent className="glass-card border-foreground/10">
           <DialogHeader>
-            <DialogTitle className="text-foreground">Confirmar Investimento</DialogTitle>
+            <DialogTitle className="text-foreground">Confirmar Aluguel</DialogTitle>
             <DialogDescription className="text-muted-foreground">
-              Você está prestes a investir no plano {selectedPlan?.name}
+              Você está prestes a alugar: {selectedPlan?.name}
             </DialogDescription>
           </DialogHeader>
           {selectedPlan && (
             <div className="space-y-3 mt-2">
               <div className="bg-foreground/5 rounded-lg p-3 space-y-2">
                 <div className="flex justify-between text-sm">
-                  <span className="text-muted-foreground">Plano:</span>
+                  <span className="text-muted-foreground">Propriedade:</span>
                   <span className="text-foreground font-medium">{selectedPlan.name}</span>
                 </div>
                 <div className="flex justify-between text-sm">
                   <span className="text-muted-foreground">Investimento:</span>
                   <span className="text-foreground font-medium">
-                    Kz {Number(selectedPlan.min_amount).toLocaleString('pt-AO')}
+                    $ {Number(selectedPlan.min_amount).toLocaleString('en-US')}
                   </span>
                 </div>
                 <div className="flex justify-between text-sm">
-                  <span className="text-muted-foreground">Duração:</span>
+                  <span className="text-muted-foreground">Período:</span>
                   <span className="text-foreground font-medium">{selectedPlan.duration_days} dias</span>
                 </div>
                 <div className="flex justify-between text-sm">
                   <span className="text-muted-foreground">Retorno Total:</span>
                   <span className="text-success font-medium">
-                    Kz {(((Number(selectedPlan.daily_return) / 100) * Number(selectedPlan.min_amount)) * selectedPlan.duration_days).toLocaleString('pt-AO')}
+                    $ {(((Number(selectedPlan.daily_return) / 100) * Number(selectedPlan.min_amount)) * selectedPlan.duration_days).toLocaleString('en-US')}
                   </span>
                 </div>
               </div>
@@ -232,9 +275,9 @@ const Investments: React.FC = () => {
         <DialogContent className="glass-card border-foreground/10 text-center">
           <div className="py-4">
             <CheckCircle className="w-16 h-16 text-success mx-auto mb-4" />
-            <h3 className="text-lg font-semibold text-foreground mb-2">Investimento Realizado!</h3>
+            <h3 className="text-lg font-semibold text-foreground mb-2">Aluguel Confirmado!</h3>
             <p className="text-sm text-muted-foreground mb-4">
-              Seu investimento no plano {selectedPlan?.name} foi criado com sucesso.
+              Você alugou a propriedade {selectedPlan?.name} com sucesso.
             </p>
             <button
               onClick={() => {
@@ -252,4 +295,4 @@ const Investments: React.FC = () => {
   );
 };
 
-export default Investments;
+export default Rentals;

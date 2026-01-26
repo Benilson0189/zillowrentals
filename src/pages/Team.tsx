@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { 
   Home, 
-  TrendingUp, 
+  Building2, 
   Users, 
   User,
   ArrowLeft,
@@ -18,7 +18,7 @@ import { useProfile, useTeamMembers } from '@/hooks/useUserData';
 
 const bottomNavItems = [
   { icon: Home, label: 'Início', path: '/dashboard' },
-  { icon: TrendingUp, label: 'Investimentos', path: '/investments' },
+  { icon: Building2, label: 'Alugar', path: '/rentals' },
   { icon: Users, label: 'Equipe', path: '/team', active: true },
   { icon: User, label: 'Perfil', path: '/profile' },
 ];
