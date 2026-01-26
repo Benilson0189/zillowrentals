@@ -19,8 +19,10 @@ export type Database = {
           color_class: string | null
           created_at: string
           daily_return: number
+          description: string | null
           duration_days: number
           id: string
+          image_url: string | null
           is_active: boolean | null
           max_amount: number
           min_amount: number
@@ -30,8 +32,10 @@ export type Database = {
           color_class?: string | null
           created_at?: string
           daily_return: number
+          description?: string | null
           duration_days: number
           id?: string
+          image_url?: string | null
           is_active?: boolean | null
           max_amount: number
           min_amount: number
@@ -41,8 +45,10 @@ export type Database = {
           color_class?: string | null
           created_at?: string
           daily_return?: number
+          description?: string | null
           duration_days?: number
           id?: string
+          image_url?: string | null
           is_active?: boolean | null
           max_amount?: number
           min_amount?: number
