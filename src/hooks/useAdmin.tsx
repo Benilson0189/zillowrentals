@@ -97,15 +97,59 @@ export const useAllTransactions = (type?: 'deposit' | 'withdrawal', status?: str
   });
 };
 
-export const useAllProfiles = () => {
+export const useAllProfiles = (searchTerm?: string) => {
   const { data: isAdmin } = useIsAdmin();
 
   return useQuery({
-    queryKey: ['all_profiles'],
+    queryKey: ['all_profiles', searchTerm],
     queryFn: async () => {
-      const { data, error } = await supabase
+      let query = supabase
         .from('profiles')
         .select('*')
+        .order('created_at', { ascending: false });
+      
+      if (searchTerm && searchTerm.trim()) {
+        query = query.or(`phone.ilike.%${searchTerm}%,full_name.ilike.%${searchTerm}%`);
+      }
+      
+      const { data, error } = await query;
+      if (error) throw error;
+      return data;
+    },
+    enabled: isAdmin === true,
+  });
+};
+
+export const useAllLinkedAccounts = () => {
+  const { data: isAdmin } = useIsAdmin();
+
+  return useQuery({
+    queryKey: ['all_linked_accounts'],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('linked_accounts')
+        .select('*')
+        .order('created_at', { ascending: false });
+      
+      if (error) throw error;
+      return data;
+    },
+    enabled: isAdmin === true,
+  });
+};
+
+export const useAllUserInvestments = () => {
+  const { data: isAdmin } = useIsAdmin();
+
+  return useQuery({
+    queryKey: ['all_user_investments'],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('user_investments')
+        .select(`
+          *,
+          plan:investment_plans(*)
+        `)
         .order('created_at', { ascending: false });
       
       if (error) throw error;

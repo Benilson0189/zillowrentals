@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { 
   Home, 
@@ -6,14 +6,10 @@ import {
   Users, 
   User,
   Wallet,
-  Bell,
-  Copy,
-  CheckCircle,
   MapPin,
   ArrowRight
 } from 'lucide-react';
-import { toast } from 'sonner';
-import { useProfile, useInvestmentPlans } from '@/hooks/useUserData';
+import { useInvestmentPlans } from '@/hooks/useUserData';
 
 // Import property images
 import property1 from '@/assets/property-1.jpg';
@@ -45,27 +41,7 @@ const bottomNavItems = [
 
 const Dashboard: React.FC = () => {
   const navigate = useNavigate();
-  const [copied, setCopied] = useState(false);
-  
-  const { data: profile, isLoading: profileLoading } = useProfile();
   const { data: plans, isLoading: plansLoading } = useInvestmentPlans();
-  
-  const inviteCode = profile?.invite_code || 'LOADING...';
-
-  const handleCopyCode = () => {
-    navigator.clipboard.writeText(`${window.location.origin}/register?inviteCode=${inviteCode}`);
-    setCopied(true);
-    toast.success('Link copiado!');
-    setTimeout(() => setCopied(false), 2000);
-  };
-
-  if (profileLoading) {
-    return (
-      <div className="min-h-screen bg-background flex items-center justify-center">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-secondary"></div>
-      </div>
-    );
-  }
 
   // Show first 4 properties as featured
   const featuredProperties = plans?.slice(0, 4) || [];
@@ -153,32 +129,6 @@ const Dashboard: React.FC = () => {
             })}
           </div>
         )}
-      </div>
-
-      {/* Invite Section */}
-      <div className="glass-card mx-3 mt-3 p-3">
-        <div className="flex items-center justify-between mb-2">
-          <div>
-            <p className="text-sm font-medium text-foreground">Convide amigos</p>
-            <p className="text-xs text-muted-foreground">Ganhe bônus por cada indicação</p>
-          </div>
-          <Users className="w-6 h-6 text-secondary" />
-        </div>
-        <div className="flex items-center gap-2">
-          <div className="flex-1 input-dark py-1.5 px-3 text-xs text-muted-foreground truncate">
-            {inviteCode}
-          </div>
-          <button
-            onClick={handleCopyCode}
-            className="p-2 bg-secondary rounded-lg hover:bg-secondary/90 transition-colors"
-          >
-            {copied ? (
-              <CheckCircle className="w-4 h-4 text-white" />
-            ) : (
-              <Copy className="w-4 h-4 text-white" />
-            )}
-          </button>
-        </div>
       </div>
 
       {/* Spacer for bottom nav */}
