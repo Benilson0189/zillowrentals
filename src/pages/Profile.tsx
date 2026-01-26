@@ -14,11 +14,18 @@ import {
   Plus,
   Trash2,
   X,
+  Gift,
+  Settings,
+  HelpCircle,
+  Share2,
+  Copy,
+  Shield,
 } from 'lucide-react';
 import { toast } from 'sonner';
 import { useAuth } from '@/hooks/useAuth';
 import { useProfile, useBalance } from '@/hooks/useUserData';
 import { useLinkedAccounts, useAddLinkedAccount, useDeleteLinkedAccount } from '@/hooks/useLinkedAccounts';
+import { useIsAdmin } from '@/hooks/useAdmin';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -37,6 +44,7 @@ const Profile: React.FC = () => {
   const { data: profile } = useProfile();
   const { data: balanceData } = useBalance();
   const { data: linkedAccounts = [] } = useLinkedAccounts();
+  const { data: isAdmin } = useIsAdmin();
   const addAccountMutation = useAddLinkedAccount();
   const deleteAccountMutation = useDeleteLinkedAccount();
   
@@ -49,6 +57,8 @@ const Profile: React.FC = () => {
   });
   
   const balance = balanceData?.balance || 0;
+  const totalEarnings = balanceData?.total_earnings || 0;
+  const commissionEarnings = balanceData?.commission_earnings || 0;
 
   const handleLogout = async () => {
     await signOut();
@@ -81,6 +91,13 @@ const Profile: React.FC = () => {
     }
   };
 
+  const copyInviteCode = () => {
+    if (profile?.invite_code) {
+      navigator.clipboard.writeText(`https://kraken-invest.lovable.app/register?ref=${profile.invite_code}`);
+      toast.success('Link de convite copiado!');
+    }
+  };
+
   const menuItems = [
     {
       icon: ArrowDownCircle,
@@ -100,6 +117,20 @@ const Profile: React.FC = () => {
       subtitle: 'Contas bancárias vinculadas',
       color: 'text-secondary',
       onClick: () => setShowAccountsModal(true),
+    },
+    {
+      icon: Gift,
+      label: 'Bônus',
+      subtitle: 'Ver bônus disponíveis',
+      color: 'text-purple-500',
+      onClick: () => toast.info('Em breve'),
+    },
+    {
+      icon: HelpCircle,
+      label: 'Ajuda',
+      subtitle: 'Suporte e FAQ',
+      color: 'text-muted-foreground',
+      onClick: () => toast.info('Em breve'),
     },
   ];
 
@@ -131,6 +162,39 @@ const Profile: React.FC = () => {
         <h2 className="text-2xl font-bold text-foreground">
           Kz {Number(balance).toLocaleString('pt-AO', { minimumFractionDigits: 2 })}
         </h2>
+        <div className="mt-3 grid grid-cols-2 gap-3">
+          <div className="bg-foreground/5 rounded-lg p-2">
+            <p className="text-[10px] text-muted-foreground">Ganhos Totais</p>
+            <p className="text-sm font-semibold text-success">
+              Kz {Number(totalEarnings).toLocaleString('pt-AO')}
+            </p>
+          </div>
+          <div className="bg-foreground/5 rounded-lg p-2">
+            <p className="text-[10px] text-muted-foreground">Comissões</p>
+            <p className="text-sm font-semibold text-secondary">
+              Kz {Number(commissionEarnings).toLocaleString('pt-AO')}
+            </p>
+          </div>
+        </div>
+      </div>
+
+      {/* Invite Code Card */}
+      <div className="glass-card mx-3 mt-3 p-3">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <Share2 className="w-4 h-4 text-secondary" />
+            <div>
+              <p className="text-xs text-muted-foreground">Seu código de convite</p>
+              <p className="text-sm font-bold text-foreground">{profile?.invite_code || '---'}</p>
+            </div>
+          </div>
+          <button 
+            onClick={copyInviteCode}
+            className="p-2 rounded-lg bg-secondary/10 text-secondary hover:bg-secondary/20"
+          >
+            <Copy className="w-4 h-4" />
+          </button>
+        </div>
       </div>
 
       {/* Menu Items */}
@@ -156,6 +220,19 @@ const Profile: React.FC = () => {
           </button>
         ))}
       </div>
+
+      {/* Admin Button (only for admins) */}
+      {isAdmin && (
+        <div className="mx-3 mt-3">
+          <button
+            onClick={() => navigate('/admin')}
+            className="w-full p-3 flex items-center justify-center gap-1.5 rounded-lg bg-secondary text-white"
+          >
+            <Shield className="w-4 h-4" />
+            <span className="text-sm font-medium">Painel Admin</span>
+          </button>
+        </div>
+      )}
 
       {/* Logout Button */}
       <div className="mx-3 mt-4">
