@@ -2,21 +2,44 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { 
   Home, 
-  TrendingUp, 
+  Building2, 
   Users, 
   User,
   Gift,
   Wallet,
   Bell,
   Copy,
-  CheckCircle
+  CheckCircle,
+  MapPin,
+  ArrowRight
 } from 'lucide-react';
 import { toast } from 'sonner';
-import { useProfile, useBalance } from '@/hooks/useUserData';
+import { useProfile, useBalance, useInvestmentPlans } from '@/hooks/useUserData';
+
+// Import property images
+import property1 from '@/assets/property-1.jpg';
+import property2 from '@/assets/property-2.jpg';
+import property3 from '@/assets/property-3.jpg';
+import property4 from '@/assets/property-4.jpg';
+import property5 from '@/assets/property-5.jpg';
+import property6 from '@/assets/property-6.jpg';
+import property7 from '@/assets/property-7.jpg';
+import property8 from '@/assets/property-8.jpg';
+
+const propertyImages: Record<number, string> = {
+  4000: property1,
+  15000: property2,
+  20000: property3,
+  25000: property4,
+  40000: property5,
+  60000: property6,
+  80000: property7,
+  100000: property8,
+};
 
 const bottomNavItems = [
   { icon: Home, label: 'Início', path: '/dashboard', active: true },
-  { icon: TrendingUp, label: 'Investimentos', path: '/investments' },
+  { icon: Building2, label: 'Alugar', path: '/rentals' },
   { icon: Users, label: 'Equipe', path: '/team' },
   { icon: User, label: 'Perfil', path: '/profile' },
 ];
@@ -27,6 +50,7 @@ const Dashboard: React.FC = () => {
   
   const { data: profile, isLoading: profileLoading } = useProfile();
   const { data: balanceData, isLoading: balanceLoading } = useBalance();
+  const { data: plans, isLoading: plansLoading } = useInvestmentPlans();
   
   const inviteCode = profile?.invite_code || 'LOADING...';
   const balance = balanceData?.balance || 0;
@@ -48,8 +72,11 @@ const Dashboard: React.FC = () => {
     );
   }
 
+  // Show first 4 properties as featured
+  const featuredProperties = plans?.slice(0, 4) || [];
+
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-background pb-20">
       {/* Header */}
       <header className="glass-card mx-3 mt-3 p-3 flex items-center justify-between">
         <div className="flex items-center gap-2">
@@ -75,22 +102,22 @@ const Dashboard: React.FC = () => {
       <div className="glass-card mx-3 mt-3 p-4">
         <p className="text-xs text-muted-foreground mb-1">Saldo Disponível</p>
         <h2 className="text-2xl font-bold text-foreground mb-3">
-          Kz {Number(balance).toLocaleString('pt-AO', { minimumFractionDigits: 2 })}
+          $ {Number(balance).toLocaleString('en-US', { minimumFractionDigits: 2 })}
         </h2>
         
         <div className="grid grid-cols-2 gap-3">
           <div className="bg-foreground/5 rounded-lg p-3">
-            <TrendingUp className="w-4 h-4 text-success mb-1" />
+            <Building2 className="w-4 h-4 text-success mb-1" />
             <p className="text-[10px] text-muted-foreground">Total Investido</p>
             <p className="text-sm font-medium text-foreground">
-              Kz {Number(totalInvested).toLocaleString('pt-AO', { minimumFractionDigits: 2 })}
+              $ {Number(totalInvested).toLocaleString('en-US', { minimumFractionDigits: 2 })}
             </p>
           </div>
           <div className="bg-foreground/5 rounded-lg p-3">
             <Gift className="w-4 h-4 text-warning mb-1" />
             <p className="text-[10px] text-muted-foreground">Total Ganhos</p>
             <p className="text-sm font-medium text-foreground">
-              Kz {Number(totalEarnings).toLocaleString('pt-AO', { minimumFractionDigits: 2 })}
+              $ {Number(totalEarnings).toLocaleString('en-US', { minimumFractionDigits: 2 })}
             </p>
           </div>
         </div>
@@ -106,12 +133,65 @@ const Dashboard: React.FC = () => {
           <span>Depositar</span>
         </button>
         <button 
-          onClick={() => navigate('/withdrawal')}
+          onClick={() => navigate('/my-rentals')}
           className="btn-outline py-3 flex items-center justify-center gap-1.5"
         >
-          <TrendingUp className="w-4 h-4" />
-          <span>Sacar</span>
+          <Building2 className="w-4 h-4" />
+          <span>Meus Aluguéis</span>
         </button>
+      </div>
+
+      {/* Featured Properties Section */}
+      <div className="mx-3 mt-4">
+        <div className="flex items-center justify-between mb-2">
+          <h3 className="text-sm font-semibold text-foreground">Propriedades em Destaque</h3>
+          <button 
+            onClick={() => navigate('/rentals')}
+            className="text-xs text-secondary flex items-center gap-1"
+          >
+            Ver todas <ArrowRight className="w-3 h-3" />
+          </button>
+        </div>
+        
+        {plansLoading ? (
+          <div className="flex justify-center py-8">
+            <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-secondary"></div>
+          </div>
+        ) : (
+          <div className="grid grid-cols-2 gap-2">
+            {featuredProperties.map((plan) => {
+              const propertyImage = propertyImages[Number(plan.min_amount)] || property1;
+              return (
+                <button 
+                  key={plan.id} 
+                  onClick={() => navigate('/rentals')}
+                  className="glass-card overflow-hidden text-left hover:border-secondary/50 transition-colors"
+                >
+                  <div className="relative h-20 overflow-hidden">
+                    <img 
+                      src={propertyImage} 
+                      alt={plan.name}
+                      className="w-full h-full object-cover"
+                    />
+                    <div className="absolute top-1 right-1 bg-success/90 text-white text-[8px] px-1.5 py-0.5 rounded-full font-medium">
+                      {plan.daily_return}%/dia
+                    </div>
+                  </div>
+                  <div className="p-2">
+                    <h4 className="text-xs font-medium text-foreground truncate">{plan.name}</h4>
+                    <p className="text-[10px] text-muted-foreground flex items-center gap-0.5">
+                      <MapPin className="w-2.5 h-2.5" />
+                      USA
+                    </p>
+                    <p className="text-xs font-bold text-secondary mt-1">
+                      $ {Number(plan.min_amount).toLocaleString('en-US')}
+                    </p>
+                  </div>
+                </button>
+              );
+            })}
+          </div>
+        )}
       </div>
 
       {/* Invite Section */}
@@ -141,7 +221,7 @@ const Dashboard: React.FC = () => {
       </div>
 
       {/* Spacer for bottom nav */}
-      <div className="h-20"></div>
+      <div className="h-4"></div>
 
       {/* Bottom Navigation */}
       <nav className="fixed bottom-0 left-0 right-0 glass-card border-t border-foreground/10 px-2 py-1.5 z-50">

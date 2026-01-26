@@ -11,7 +11,7 @@ const paymentMethods = [
     icon: Smartphone,
     bankDetails: {
       phone: '923 456 789',
-      name: 'KRAKEN INVEST LDA',
+      name: 'ZILLOW RENTALS LLC',
     }
   },
   { 
@@ -21,7 +21,7 @@ const paymentMethods = [
     bankDetails: {
       entity: '00123',
       reference: '123 456 789',
-      name: 'KRAKEN INVEST LDA',
+      name: 'ZILLOW RENTALS LLC',
     }
   },
   { 
@@ -31,7 +31,7 @@ const paymentMethods = [
     bankDetails: {
       bank: 'Banco BAI',
       iban: 'AO06 0040 0000 1234 5678 9012 3',
-      accountName: 'KRAKEN INVEST LDA',
+      accountName: 'ZILLOW RENTALS LLC',
       nif: '5000123456',
     }
   },

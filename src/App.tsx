@@ -8,7 +8,8 @@ import ProtectedRoute from "@/components/ProtectedRoute";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
 import Dashboard from "./pages/Dashboard";
-import Investments from "./pages/Investments";
+import Rentals from "./pages/Rentals";
+import MyRentals from "./pages/MyRentals";
 import Team from "./pages/Team";
 import Profile from "./pages/Profile";
 import Withdrawals from "./pages/Withdrawals";
@@ -36,11 +37,18 @@ const App = () => (
                 <Dashboard />
               </ProtectedRoute>
             } />
-            <Route path="/investments" element={
+            <Route path="/rentals" element={
               <ProtectedRoute>
-                <Investments />
+                <Rentals />
               </ProtectedRoute>
             } />
+            <Route path="/my-rentals" element={
+              <ProtectedRoute>
+                <MyRentals />
+              </ProtectedRoute>
+            } />
+            {/* Legacy route redirect */}
+            <Route path="/investments" element={<Navigate to="/my-rentals" replace />} />
             <Route path="/team" element={
               <ProtectedRoute>
                 <Team />

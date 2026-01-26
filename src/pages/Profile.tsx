@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { 
   Home, 
-  TrendingUp, 
+  Building2, 
   Users,
   User,
   ChevronRight,
@@ -15,7 +15,6 @@ import {
   Trash2,
   X,
   Gift,
-  Settings,
   HelpCircle,
   Share2,
   Copy,
@@ -33,7 +32,7 @@ import { Label } from '@/components/ui/label';
 
 const bottomNavItems = [
   { icon: Home, label: 'Início', path: '/dashboard', active: false },
-  { icon: TrendingUp, label: 'Investimentos', path: '/investments', active: false },
+  { icon: Building2, label: 'Alugar', path: '/rentals', active: false },
   { icon: Users, label: 'Equipe', path: '/team', active: false },
   { icon: User, label: 'Perfil', path: '/profile', active: true },
 ];
@@ -93,7 +92,7 @@ const Profile: React.FC = () => {
 
   const copyInviteCode = () => {
     if (profile?.invite_code) {
-      navigator.clipboard.writeText(`https://kraken-invest.lovable.app/register?ref=${profile.invite_code}`);
+      navigator.clipboard.writeText(`${window.location.origin}/register?ref=${profile.invite_code}`);
       toast.success('Link de convite copiado!');
     }
   };
@@ -160,19 +159,19 @@ const Profile: React.FC = () => {
       <div className="glass-card mx-3 mt-3 p-4">
         <p className="text-xs text-muted-foreground mb-1">Saldo Total Disponível</p>
         <h2 className="text-2xl font-bold text-foreground">
-          Kz {Number(balance).toLocaleString('pt-AO', { minimumFractionDigits: 2 })}
+          $ {Number(balance).toLocaleString('en-US', { minimumFractionDigits: 2 })}
         </h2>
         <div className="mt-3 grid grid-cols-2 gap-3">
           <div className="bg-foreground/5 rounded-lg p-2">
             <p className="text-[10px] text-muted-foreground">Ganhos Totais</p>
             <p className="text-sm font-semibold text-success">
-              Kz {Number(totalEarnings).toLocaleString('pt-AO')}
+              $ {Number(totalEarnings).toLocaleString('en-US')}
             </p>
           </div>
           <div className="bg-foreground/5 rounded-lg p-2">
             <p className="text-[10px] text-muted-foreground">Comissões</p>
             <p className="text-sm font-semibold text-secondary">
-              Kz {Number(commissionEarnings).toLocaleString('pt-AO')}
+              $ {Number(commissionEarnings).toLocaleString('en-US')}
             </p>
           </div>
         </div>
