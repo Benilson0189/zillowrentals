@@ -5,7 +5,6 @@ import {
   Building2, 
   Users, 
   User,
-  Gift,
   Wallet,
   Bell,
   Copy,
@@ -14,7 +13,7 @@ import {
   ArrowRight
 } from 'lucide-react';
 import { toast } from 'sonner';
-import { useProfile, useBalance, useInvestmentPlans } from '@/hooks/useUserData';
+import { useProfile, useInvestmentPlans } from '@/hooks/useUserData';
 
 // Import property images
 import property1 from '@/assets/property-1.jpg';
@@ -49,13 +48,9 @@ const Dashboard: React.FC = () => {
   const [copied, setCopied] = useState(false);
   
   const { data: profile, isLoading: profileLoading } = useProfile();
-  const { data: balanceData, isLoading: balanceLoading } = useBalance();
   const { data: plans, isLoading: plansLoading } = useInvestmentPlans();
   
   const inviteCode = profile?.invite_code || 'LOADING...';
-  const balance = balanceData?.balance || 0;
-  const totalInvested = balanceData?.total_invested || 0;
-  const totalEarnings = balanceData?.total_earnings || 0;
 
   const handleCopyCode = () => {
     navigator.clipboard.writeText(`${window.location.origin}/register?inviteCode=${inviteCode}`);
@@ -64,7 +59,7 @@ const Dashboard: React.FC = () => {
     setTimeout(() => setCopied(false), 2000);
   };
 
-  if (profileLoading || balanceLoading) {
+  if (profileLoading) {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center">
         <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-secondary"></div>
@@ -77,50 +72,16 @@ const Dashboard: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-background pb-20">
-      {/* Header */}
-      <header className="glass-card mx-3 mt-3 p-3 flex items-center justify-between">
-        <div className="flex items-center gap-2">
-          <div className="w-8 h-8 bg-secondary rounded-full flex items-center justify-center">
-            <span className="text-white font-medium text-sm">
-              {profile?.full_name?.charAt(0)?.toUpperCase() || 'U'}
-            </span>
-          </div>
-          <div>
-            <p className="text-xs text-muted-foreground">Bem-vindo</p>
-            <p className="text-sm font-medium text-foreground">
-              {profile?.full_name || 'Usuário'}
-            </p>
-          </div>
+      {/* Hero Logo Section */}
+      <div className="mx-3 mt-3 glass-card p-6 flex flex-col items-center justify-center">
+        <div className="w-20 h-20 bg-secondary rounded-2xl flex items-center justify-center mb-4 shadow-lg">
+          <Home className="w-12 h-12 text-white" />
         </div>
-        <button className="relative p-1.5 rounded-full hover:bg-foreground/10">
-          <Bell className="w-4 h-4 text-foreground" />
-          <span className="absolute top-0.5 right-0.5 w-1.5 h-1.5 bg-destructive rounded-full"></span>
-        </button>
-      </header>
-
-      {/* Balance Card */}
-      <div className="glass-card mx-3 mt-3 p-4">
-        <p className="text-xs text-muted-foreground mb-1">Saldo Disponível</p>
-        <h2 className="text-2xl font-bold text-foreground mb-3">
-          $ {Number(balance).toLocaleString('en-US', { minimumFractionDigits: 2 })}
-        </h2>
-        
-        <div className="grid grid-cols-2 gap-3">
-          <div className="bg-foreground/5 rounded-lg p-3">
-            <Building2 className="w-4 h-4 text-success mb-1" />
-            <p className="text-[10px] text-muted-foreground">Total Investido</p>
-            <p className="text-sm font-medium text-foreground">
-              $ {Number(totalInvested).toLocaleString('en-US', { minimumFractionDigits: 2 })}
-            </p>
-          </div>
-          <div className="bg-foreground/5 rounded-lg p-3">
-            <Gift className="w-4 h-4 text-warning mb-1" />
-            <p className="text-[10px] text-muted-foreground">Total Ganhos</p>
-            <p className="text-sm font-medium text-foreground">
-              $ {Number(totalEarnings).toLocaleString('en-US', { minimumFractionDigits: 2 })}
-            </p>
-          </div>
-        </div>
+        <h1 className="text-3xl font-bold text-foreground tracking-tight">Zillow</h1>
+        <span className="text-sm text-secondary font-semibold tracking-[0.3em] mt-1">RENTALS</span>
+        <p className="text-xs text-muted-foreground mt-3 text-center">
+          Seu portal de investimento em aluguéis nos EUA
+        </p>
       </div>
 
       {/* Quick Actions */}
