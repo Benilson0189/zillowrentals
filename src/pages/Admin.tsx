@@ -11,7 +11,9 @@ import {
   X,
   FileText,
   CreditCard,
-  Shield
+  Shield,
+  Search,
+  Building2
 } from 'lucide-react';
 import { toast } from 'sonner';
 import { 
@@ -19,17 +21,23 @@ import {
   useAdminStats, 
   useAllTransactions, 
   useAllProfiles,
+  useAllLinkedAccounts,
+  useAllUserInvestments,
   useUpdateTransaction 
 } from '@/hooks/useAdmin';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { Input } from '@/components/ui/input';
 
 const Admin: React.FC = () => {
   const navigate = useNavigate();
   const { data: isAdmin, isLoading: checkingAdmin } = useIsAdmin();
   const { data: stats } = useAdminStats();
   const { data: allTransactions } = useAllTransactions();
-  const { data: allProfiles } = useAllProfiles();
+  const [searchTerm, setSearchTerm] = useState('');
+  const { data: allProfiles } = useAllProfiles(searchTerm);
+  const { data: linkedAccounts } = useAllLinkedAccounts();
+  const { data: userInvestments } = useAllUserInvestments();
   const updateTransaction = useUpdateTransaction();
 
   const [activeTab, setActiveTab] = useState('deposits');
@@ -69,9 +77,12 @@ const Admin: React.FC = () => {
   };
 
   // Get profile phone for a user
-  const getProfilePhone = (userId: string) => {
+  const getProfileInfo = (userId: string) => {
     const profile = allProfiles?.find(p => p.user_id === userId);
-    return profile?.phone || 'N/A';
+    return {
+      phone: profile?.phone || 'N/A',
+      name: profile?.full_name || 'Sem nome'
+    };
   };
 
   if (checkingAdmin) {
@@ -105,12 +116,26 @@ const Admin: React.FC = () => {
         <h1 className="text-base font-semibold text-foreground">Painel Administrativo</h1>
       </header>
 
+      {/* Search Bar */}
+      <div className="mx-3 mt-3">
+        <div className="relative">
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+          <Input
+            type="text"
+            placeholder="Buscar usuário por telefone ou nome..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            className="pl-10 bg-foreground/5 border-foreground/10"
+          />
+        </div>
+      </div>
+
       {/* Stats Grid */}
       <div className="mx-3 mt-3 grid grid-cols-2 gap-3">
         <div className="glass-card p-3">
           <Users className="w-5 h-5 text-secondary mb-1" />
           <p className="text-2xl font-bold text-foreground">
-            {stats?.usersCount.toLocaleString('pt-AO') || 0}
+            {stats?.usersCount.toLocaleString('en-US') || 0}
           </p>
           <p className="text-xs text-muted-foreground">Usuários</p>
         </div>
@@ -131,7 +156,7 @@ const Admin: React.FC = () => {
         <div className="glass-card p-3">
           <TrendingUp className="w-5 h-5 text-success mb-1" />
           <p className="text-2xl font-bold text-foreground">
-            {Number(stats?.totalDeposited || 0).toLocaleString('pt-AO')}
+            $ {Number(stats?.totalDeposited || 0).toLocaleString('en-US')}
           </p>
           <p className="text-xs text-muted-foreground">Total Depositado</p>
         </div>
@@ -154,7 +179,7 @@ const Admin: React.FC = () => {
               <CreditCard className="w-4 h-4" />
             </TabsTrigger>
             <TabsTrigger value="investments" className="text-xs">
-              <TrendingUp className="w-4 h-4" />
+              <Building2 className="w-4 h-4" />
             </TabsTrigger>
           </TabsList>
 
@@ -167,7 +192,7 @@ const Admin: React.FC = () => {
                 <TransactionCard 
                   key={tx.id} 
                   transaction={tx} 
-                  phone={getProfilePhone(tx.user_id)}
+                  phone={getProfileInfo(tx.user_id).phone}
                   onApprove={() => handleApprove(tx)}
                   onReject={() => handleReject(tx)}
                   onViewProof={() => setSelectedProof(tx.proof_url)}
@@ -186,7 +211,7 @@ const Admin: React.FC = () => {
                 <TransactionCard 
                   key={tx.id} 
                   transaction={tx} 
-                  phone={getProfilePhone(tx.user_id)}
+                  phone={getProfileInfo(tx.user_id).phone}
                   onApprove={() => handleApprove(tx)}
                   onReject={() => handleReject(tx)}
                   isPending={updateTransaction.isPending}
@@ -198,31 +223,94 @@ const Admin: React.FC = () => {
 
           {/* Users Tab */}
           <TabsContent value="users" className="mt-3 space-y-2">
-            {allProfiles?.map((profile) => (
-              <div key={profile.id} className="glass-card p-3">
-                <div className="flex justify-between items-center">
-                  <div>
-                    <p className="text-sm font-medium text-foreground">
-                      {profile.full_name || 'Sem nome'}
+            {allProfiles?.length === 0 ? (
+              <p className="text-center text-muted-foreground py-8">
+                {searchTerm ? 'Nenhum usuário encontrado' : 'Nenhum usuário'}
+              </p>
+            ) : (
+              allProfiles?.map((profile) => (
+                <div key={profile.id} className="glass-card p-3">
+                  <div className="flex justify-between items-center">
+                    <div>
+                      <p className="text-sm font-medium text-foreground">
+                        {profile.full_name || 'Sem nome'}
+                      </p>
+                      <p className="text-xs text-muted-foreground">{profile.phone}</p>
+                      <p className="text-[10px] text-secondary">Código: {profile.invite_code}</p>
+                    </div>
+                    <p className="text-xs text-muted-foreground">
+                      {new Date(profile.created_at).toLocaleDateString('en-US')}
                     </p>
-                    <p className="text-xs text-muted-foreground">{profile.phone}</p>
                   </div>
-                  <p className="text-xs text-muted-foreground">
-                    {new Date(profile.created_at).toLocaleDateString('pt-AO')}
-                  </p>
                 </div>
-              </div>
-            ))}
+              ))
+            )}
           </TabsContent>
 
-          {/* Accounts Tab */}
-          <TabsContent value="accounts" className="mt-3">
-            <p className="text-center text-muted-foreground py-8">Em desenvolvimento</p>
+          {/* Linked Accounts Tab */}
+          <TabsContent value="accounts" className="mt-3 space-y-2">
+            {linkedAccounts?.length === 0 ? (
+              <p className="text-center text-muted-foreground py-8">Nenhuma conta vinculada</p>
+            ) : (
+              linkedAccounts?.map((account) => {
+                const userInfo = getProfileInfo(account.user_id);
+                return (
+                  <div key={account.id} className="glass-card p-3">
+                    <div className="flex justify-between items-start">
+                      <div>
+                        <p className="text-sm font-medium text-foreground">{account.bank_name}</p>
+                        <p className="text-xs text-muted-foreground">{account.account_name}</p>
+                        <p className="text-xs text-secondary font-mono">{account.account_number}</p>
+                      </div>
+                      <div className="text-right">
+                        <p className="text-xs text-muted-foreground">{userInfo.name}</p>
+                        <p className="text-[10px] text-muted-foreground">{userInfo.phone}</p>
+                      </div>
+                    </div>
+                  </div>
+                );
+              })
+            )}
           </TabsContent>
 
           {/* Investments Tab */}
-          <TabsContent value="investments" className="mt-3">
-            <p className="text-center text-muted-foreground py-8">Em desenvolvimento</p>
+          <TabsContent value="investments" className="mt-3 space-y-2">
+            {userInvestments?.length === 0 ? (
+              <p className="text-center text-muted-foreground py-8">Nenhum aluguel ativo</p>
+            ) : (
+              userInvestments?.map((investment) => {
+                const userInfo = getProfileInfo(investment.user_id);
+                const daysRemaining = Math.max(0, Math.ceil((new Date(investment.end_date).getTime() - Date.now()) / (1000 * 60 * 60 * 24)));
+                return (
+                  <div key={investment.id} className="glass-card p-3">
+                    <div className="flex justify-between items-start">
+                      <div>
+                        <p className="text-sm font-medium text-foreground">
+                          {investment.plan?.name || 'Plano'}
+                        </p>
+                        <p className="text-xs text-secondary font-bold">
+                          $ {Number(investment.amount).toLocaleString('en-US')}
+                        </p>
+                        <p className="text-[10px] text-muted-foreground">
+                          {daysRemaining} dias restantes
+                        </p>
+                      </div>
+                      <div className="text-right">
+                        <p className="text-xs text-muted-foreground">{userInfo.name}</p>
+                        <p className="text-[10px] text-muted-foreground">{userInfo.phone}</p>
+                        <span className={`text-[10px] px-2 py-0.5 rounded-full ${
+                          investment.status === 'active' 
+                            ? 'bg-success/10 text-success' 
+                            : 'bg-muted text-muted-foreground'
+                        }`}>
+                          {investment.status === 'active' ? 'Ativo' : 'Concluído'}
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+                );
+              })
+            )}
           </TabsContent>
         </Tabs>
       </div>
@@ -282,13 +370,13 @@ const TransactionCard: React.FC<TransactionCardProps> = ({
       <div className="flex justify-between items-start">
         <div>
           <p className="text-lg font-bold text-foreground">
-            {Number(transaction.amount).toLocaleString('pt-AO')} Kz
+            $ {Number(transaction.amount).toLocaleString('en-US')}
           </p>
           <p className="text-xs text-secondary flex items-center gap-1">
             📱 {phone}
           </p>
           <p className="text-xs text-muted-foreground">
-            {transaction.payment_method || 'N/A'} • {new Date(transaction.created_at).toLocaleDateString('pt-AO')}
+            {transaction.payment_method || 'N/A'} • {new Date(transaction.created_at).toLocaleDateString('en-US')}
           </p>
           {showAccount && transaction.linked_account && (
             <p className="text-xs text-muted-foreground mt-1">
