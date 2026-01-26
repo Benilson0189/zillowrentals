@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { 
   Home, 
@@ -10,10 +10,19 @@ import {
   Bell,
   ArrowDownCircle,
   ArrowUpCircle,
+  CreditCard,
+  Plus,
+  Trash2,
+  X,
 } from 'lucide-react';
 import { toast } from 'sonner';
 import { useAuth } from '@/hooks/useAuth';
 import { useProfile, useBalance } from '@/hooks/useUserData';
+import { useLinkedAccounts, useAddLinkedAccount, useDeleteLinkedAccount } from '@/hooks/useLinkedAccounts';
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
 
 const bottomNavItems = [
   { icon: Home, label: 'Início', path: '/dashboard', active: false },
@@ -27,6 +36,17 @@ const Profile: React.FC = () => {
   const { signOut } = useAuth();
   const { data: profile } = useProfile();
   const { data: balanceData } = useBalance();
+  const { data: linkedAccounts = [] } = useLinkedAccounts();
+  const addAccountMutation = useAddLinkedAccount();
+  const deleteAccountMutation = useDeleteLinkedAccount();
+  
+  const [showAccountsModal, setShowAccountsModal] = useState(false);
+  const [showAddAccountForm, setShowAddAccountForm] = useState(false);
+  const [newAccount, setNewAccount] = useState({
+    account_name: '',
+    account_number: '',
+    bank_name: '',
+  });
   
   const balance = balanceData?.balance || 0;
 
@@ -36,20 +56,50 @@ const Profile: React.FC = () => {
     navigate('/login');
   };
 
+  const handleAddAccount = async () => {
+    if (!newAccount.account_name || !newAccount.account_number || !newAccount.bank_name) {
+      toast.error('Preencha todos os campos');
+      return;
+    }
+    
+    try {
+      await addAccountMutation.mutateAsync(newAccount);
+      toast.success('Conta vinculada com sucesso');
+      setNewAccount({ account_name: '', account_number: '', bank_name: '' });
+      setShowAddAccountForm(false);
+    } catch (error) {
+      toast.error('Erro ao vincular conta');
+    }
+  };
+
+  const handleDeleteAccount = async (accountId: string) => {
+    try {
+      await deleteAccountMutation.mutateAsync(accountId);
+      toast.success('Conta removida');
+    } catch (error) {
+      toast.error('Erro ao remover conta');
+    }
+  };
+
   const menuItems = [
     {
       icon: ArrowDownCircle,
-      label: 'Depositar',
-      value: '',
+      label: 'Recarga',
       color: 'text-success',
       onClick: () => navigate('/deposit'),
     },
     {
       icon: ArrowUpCircle,
-      label: 'Sacar',
-      value: '',
+      label: 'Retirada',
       color: 'text-warning',
       onClick: () => navigate('/withdrawal'),
+    },
+    {
+      icon: CreditCard,
+      label: 'Informações Pessoais',
+      subtitle: 'Contas bancárias vinculadas',
+      color: 'text-secondary',
+      onClick: () => setShowAccountsModal(true),
     },
   ];
 
@@ -95,14 +145,14 @@ const Profile: React.FC = () => {
               <div className={`p-1.5 rounded-lg bg-foreground/5 ${item.color}`}>
                 <item.icon className="w-4 h-4" />
               </div>
-              <span className="text-sm font-medium text-foreground">{item.label}</span>
+              <div className="text-left">
+                <span className="text-sm font-medium text-foreground block">{item.label}</span>
+                {item.subtitle && (
+                  <span className="text-xs text-muted-foreground">{item.subtitle}</span>
+                )}
+              </div>
             </div>
-            <div className="flex items-center gap-1.5">
-              {item.value && (
-                <span className={`text-xs ${item.color}`}>{item.value}</span>
-              )}
-              <ChevronRight className="w-4 h-4 text-muted-foreground" />
-            </div>
+            <ChevronRight className="w-4 h-4 text-muted-foreground" />
           </button>
         ))}
       </div>
@@ -117,6 +167,93 @@ const Profile: React.FC = () => {
           <span className="text-sm font-medium">Sair da Conta</span>
         </button>
       </div>
+
+      {/* Linked Accounts Modal */}
+      <Dialog open={showAccountsModal} onOpenChange={setShowAccountsModal}>
+        <DialogContent className="bg-background border-foreground/10 max-w-md">
+          <DialogHeader>
+            <DialogTitle className="text-foreground">Contas Bancárias Vinculadas</DialogTitle>
+          </DialogHeader>
+          
+          <div className="space-y-3 mt-4">
+            {linkedAccounts.length === 0 && !showAddAccountForm && (
+              <p className="text-sm text-muted-foreground text-center py-4">
+                Nenhuma conta vinculada
+              </p>
+            )}
+            
+            {linkedAccounts.map((account) => (
+              <div key={account.id} className="glass-card p-3 flex items-center justify-between">
+                <div>
+                  <p className="text-sm font-medium text-foreground">{account.bank_name}</p>
+                  <p className="text-xs text-muted-foreground">{account.account_name}</p>
+                  <p className="text-xs text-muted-foreground">{account.account_number}</p>
+                </div>
+                <button
+                  onClick={() => handleDeleteAccount(account.id)}
+                  className="p-1.5 rounded-full hover:bg-destructive/10 text-destructive"
+                >
+                  <Trash2 className="w-4 h-4" />
+                </button>
+              </div>
+            ))}
+            
+            {showAddAccountForm ? (
+              <div className="space-y-3 p-3 glass-card">
+                <div className="flex items-center justify-between">
+                  <p className="text-sm font-medium text-foreground">Nova Conta</p>
+                  <button onClick={() => setShowAddAccountForm(false)}>
+                    <X className="w-4 h-4 text-muted-foreground" />
+                  </button>
+                </div>
+                <div className="space-y-2">
+                  <Label className="text-xs">Nome do Banco</Label>
+                  <Input
+                    value={newAccount.bank_name}
+                    onChange={(e) => setNewAccount({ ...newAccount, bank_name: e.target.value })}
+                    placeholder="Ex: BAI, BFA, Atlantico..."
+                    className="bg-background/50"
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label className="text-xs">Titular da Conta</Label>
+                  <Input
+                    value={newAccount.account_name}
+                    onChange={(e) => setNewAccount({ ...newAccount, account_name: e.target.value })}
+                    placeholder="Nome completo"
+                    className="bg-background/50"
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label className="text-xs">IBAN</Label>
+                  <Input
+                    value={newAccount.account_number}
+                    onChange={(e) => setNewAccount({ ...newAccount, account_number: e.target.value })}
+                    placeholder="AO06..."
+                    className="bg-background/50"
+                  />
+                </div>
+                <Button 
+                  onClick={handleAddAccount} 
+                  className="w-full"
+                  disabled={addAccountMutation.isPending}
+                >
+                  {addAccountMutation.isPending ? 'Salvando...' : 'Salvar Conta'}
+                </Button>
+              </div>
+            ) : (
+              <Button
+                variant="outline"
+                onClick={() => setShowAddAccountForm(true)}
+                className="w-full"
+              >
+                <Plus className="w-4 h-4 mr-2" />
+                Adicionar Conta
+              </Button>
+            )}
+          </div>
+        </DialogContent>
+      </Dialog>
 
       {/* Spacer for bottom nav */}
       <div className="h-20"></div>
