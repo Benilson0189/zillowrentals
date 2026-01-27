@@ -16,13 +16,12 @@ import {
   X,
   Gift,
   HelpCircle,
-  Share2,
-  Copy,
   Shield,
+  Clock,
 } from 'lucide-react';
 import { toast } from 'sonner';
 import { useAuth } from '@/hooks/useAuth';
-import { useProfile, useBalance } from '@/hooks/useUserData';
+import { useProfile, useBalance, useTransactions } from '@/hooks/useUserData';
 import { useLinkedAccounts, useAddLinkedAccount, useDeleteLinkedAccount } from '@/hooks/useLinkedAccounts';
 import { useIsAdmin } from '@/hooks/useAdmin';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
@@ -44,11 +43,15 @@ const Profile: React.FC = () => {
   const { data: balanceData } = useBalance();
   const { data: linkedAccounts = [] } = useLinkedAccounts();
   const { data: isAdmin } = useIsAdmin();
+  const { data: deposits = [] } = useTransactions('deposit');
+  const { data: withdrawals = [] } = useTransactions('withdrawal');
   const addAccountMutation = useAddLinkedAccount();
   const deleteAccountMutation = useDeleteLinkedAccount();
   
   const [showAccountsModal, setShowAccountsModal] = useState(false);
   const [showAddAccountForm, setShowAddAccountForm] = useState(false);
+  const [showDepositsModal, setShowDepositsModal] = useState(false);
+  const [showWithdrawalsModal, setShowWithdrawalsModal] = useState(false);
   const [newAccount, setNewAccount] = useState({
     account_name: '',
     account_number: '',
@@ -90,10 +93,19 @@ const Profile: React.FC = () => {
     }
   };
 
-  const copyInviteCode = () => {
-    if (profile?.invite_code) {
-      navigator.clipboard.writeText(`${window.location.origin}/register?ref=${profile.invite_code}`);
-      toast.success('Link de convite copiado!');
+  const getStatusColor = (status: string) => {
+    switch (status) {
+      case 'approved': return 'text-success bg-success/10';
+      case 'rejected': return 'text-destructive bg-destructive/10';
+      default: return 'text-warning bg-warning/10';
+    }
+  };
+
+  const getStatusLabel = (status: string) => {
+    switch (status) {
+      case 'approved': return 'Aprovado';
+      case 'rejected': return 'Rejeitado';
+      default: return 'Pendente';
     }
   };
 
@@ -109,6 +121,20 @@ const Profile: React.FC = () => {
       label: 'Retirada',
       color: 'text-warning',
       onClick: () => navigate('/withdrawal'),
+    },
+    {
+      icon: Clock,
+      label: 'Histórico de Recargas',
+      subtitle: `${deposits.length} transações`,
+      color: 'text-success',
+      onClick: () => setShowDepositsModal(true),
+    },
+    {
+      icon: Clock,
+      label: 'Histórico de Retiradas',
+      subtitle: `${withdrawals.length} transações`,
+      color: 'text-warning',
+      onClick: () => setShowWithdrawalsModal(true),
     },
     {
       icon: CreditCard,
@@ -174,25 +200,6 @@ const Profile: React.FC = () => {
               $ {Number(commissionEarnings).toLocaleString('en-US')}
             </p>
           </div>
-        </div>
-      </div>
-
-      {/* Invite Code Card */}
-      <div className="glass-card mx-3 mt-3 p-3">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <Share2 className="w-4 h-4 text-secondary" />
-            <div>
-              <p className="text-xs text-muted-foreground">Seu código de convite</p>
-              <p className="text-sm font-bold text-foreground">{profile?.invite_code || '---'}</p>
-            </div>
-          </div>
-          <button 
-            onClick={copyInviteCode}
-            className="p-2 rounded-lg bg-secondary/10 text-secondary hover:bg-secondary/20"
-          >
-            <Copy className="w-4 h-4" />
-          </button>
         </div>
       </div>
 
@@ -326,6 +333,84 @@ const Profile: React.FC = () => {
                 <Plus className="w-4 h-4 mr-2" />
                 Adicionar Conta
               </Button>
+            )}
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      {/* Deposits History Modal */}
+      <Dialog open={showDepositsModal} onOpenChange={setShowDepositsModal}>
+        <DialogContent className="bg-background border-foreground/10 max-w-md max-h-[80vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle className="text-foreground">Histórico de Recargas</DialogTitle>
+          </DialogHeader>
+          
+          <div className="space-y-2 mt-4">
+            {deposits.length === 0 ? (
+              <p className="text-sm text-muted-foreground text-center py-4">
+                Nenhuma recarga encontrada
+              </p>
+            ) : (
+              deposits.map((deposit) => (
+                <div key={deposit.id} className="glass-card p-3">
+                  <div className="flex items-center justify-between mb-1">
+                    <p className="text-sm font-medium text-foreground">
+                      $ {Number(deposit.amount).toLocaleString('en-US')}
+                    </p>
+                    <span className={`text-[10px] px-2 py-0.5 rounded-full ${getStatusColor(deposit.status)}`}>
+                      {getStatusLabel(deposit.status)}
+                    </span>
+                  </div>
+                  <p className="text-xs text-muted-foreground">
+                    {new Date(deposit.created_at).toLocaleDateString('pt-AO', {
+                      day: '2-digit',
+                      month: '2-digit',
+                      year: 'numeric',
+                      hour: '2-digit',
+                      minute: '2-digit'
+                    })}
+                  </p>
+                </div>
+              ))
+            )}
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      {/* Withdrawals History Modal */}
+      <Dialog open={showWithdrawalsModal} onOpenChange={setShowWithdrawalsModal}>
+        <DialogContent className="bg-background border-foreground/10 max-w-md max-h-[80vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle className="text-foreground">Histórico de Retiradas</DialogTitle>
+          </DialogHeader>
+          
+          <div className="space-y-2 mt-4">
+            {withdrawals.length === 0 ? (
+              <p className="text-sm text-muted-foreground text-center py-4">
+                Nenhuma retirada encontrada
+              </p>
+            ) : (
+              withdrawals.map((withdrawal) => (
+                <div key={withdrawal.id} className="glass-card p-3">
+                  <div className="flex items-center justify-between mb-1">
+                    <p className="text-sm font-medium text-foreground">
+                      $ {Number(withdrawal.amount).toLocaleString('en-US')}
+                    </p>
+                    <span className={`text-[10px] px-2 py-0.5 rounded-full ${getStatusColor(withdrawal.status)}`}>
+                      {getStatusLabel(withdrawal.status)}
+                    </span>
+                  </div>
+                  <p className="text-xs text-muted-foreground">
+                    {new Date(withdrawal.created_at).toLocaleDateString('pt-AO', {
+                      day: '2-digit',
+                      month: '2-digit',
+                      year: 'numeric',
+                      hour: '2-digit',
+                      minute: '2-digit'
+                    })}
+                  </p>
+                </div>
+              ))
             )}
           </div>
         </DialogContent>

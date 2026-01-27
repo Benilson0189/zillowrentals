@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { 
   Home, 
@@ -11,7 +11,6 @@ import {
   Gift
 } from 'lucide-react';
 import { useInvestmentPlans } from '@/hooks/useUserData';
-import zillowLogo from '@/assets/zillow-logo.jpg';
 
 // Import property images
 import property1 from '@/assets/property-1.jpg';
@@ -22,6 +21,8 @@ import property5 from '@/assets/property-5.jpg';
 import property6 from '@/assets/property-6.jpg';
 import property7 from '@/assets/property-7.jpg';
 import property8 from '@/assets/property-8.jpg';
+
+const allPropertyImages = [property1, property2, property3, property4, property5, property6, property7, property8];
 
 const propertyImages: Record<number, string> = {
   4000: property1,
@@ -44,19 +45,49 @@ const bottomNavItems = [
 const Dashboard: React.FC = () => {
   const navigate = useNavigate();
   const { data: plans, isLoading: plansLoading } = useInvestmentPlans();
+  const [currentImageIndex, setCurrentImageIndex] = useState(0);
+
+  // Rotate images every 4 seconds
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setCurrentImageIndex((prev) => (prev + 1) % allPropertyImages.length);
+    }, 4000);
+    return () => clearInterval(interval);
+  }, []);
 
   // Show first 4 properties as featured
   const featuredProperties = plans?.slice(0, 4) || [];
 
   return (
     <div className="min-h-screen bg-background pb-20">
-      {/* Hero Logo Section */}
-      <div className="mx-3 mt-3">
-        <img 
-          src={zillowLogo} 
-          alt="Zillow Rentals" 
-          className="w-full h-auto rounded-2xl shadow-lg"
-        />
+      {/* Hero Image Carousel Section */}
+      <div className="mx-3 mt-3 relative overflow-hidden rounded-2xl shadow-lg h-48">
+        {allPropertyImages.map((img, index) => (
+          <img 
+            key={index}
+            src={img} 
+            alt={`Property ${index + 1}`}
+            className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-1000 ${
+              index === currentImageIndex ? 'opacity-100' : 'opacity-0'
+            }`}
+          />
+        ))}
+        <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
+        <div className="absolute bottom-3 left-3 right-3">
+          <h2 className="text-white text-lg font-bold">Zillow Rentals</h2>
+          <p className="text-white/80 text-xs">Seu portal de investimento em aluguéis nos EUA</p>
+        </div>
+        {/* Dots indicator */}
+        <div className="absolute bottom-3 right-3 flex gap-1">
+          {allPropertyImages.map((_, index) => (
+            <div 
+              key={index}
+              className={`w-1.5 h-1.5 rounded-full transition-colors ${
+                index === currentImageIndex ? 'bg-white' : 'bg-white/40'
+              }`}
+            />
+          ))}
+        </div>
       </div>
 
       {/* Quick Actions */}
