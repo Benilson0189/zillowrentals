@@ -113,6 +113,7 @@ export type Database = {
       profiles: {
         Row: {
           created_at: string
+          display_id: string
           full_name: string | null
           id: string
           invite_code: string
@@ -123,6 +124,7 @@ export type Database = {
         }
         Insert: {
           created_at?: string
+          display_id?: string
           full_name?: string | null
           id?: string
           invite_code?: string
@@ -133,6 +135,7 @@ export type Database = {
         }
         Update: {
           created_at?: string
+          display_id?: string
           full_name?: string | null
           id?: string
           invite_code?: string
@@ -301,6 +304,7 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      generate_display_id: { Args: never; Returns: string }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]
