@@ -7,7 +7,8 @@ import {
   User,
   Wallet,
   MapPin,
-  ArrowRight
+  ArrowRight,
+  Gift
 } from 'lucide-react';
 import { useInvestmentPlans } from '@/hooks/useUserData';
 
@@ -61,20 +62,34 @@ const Dashboard: React.FC = () => {
       </div>
 
       {/* Quick Actions */}
-      <div className="grid grid-cols-2 gap-3 mx-3 mt-3">
+      <div className="grid grid-cols-4 gap-2 mx-3 mt-3">
         <button 
           onClick={() => navigate('/deposit')}
-          className="btn-primary py-3 flex items-center justify-center gap-1.5"
+          className="bg-secondary hover:bg-secondary/90 text-white rounded-xl p-3 flex flex-col items-center justify-center gap-1.5 transition-colors aspect-square"
         >
-          <Wallet className="w-4 h-4" />
-          <span>Depositar</span>
+          <Wallet className="w-5 h-5" />
+          <span className="text-[10px] font-medium">Recarga</span>
+        </button>
+        <button 
+          onClick={() => navigate('/withdrawal')}
+          className="bg-secondary hover:bg-secondary/90 text-white rounded-xl p-3 flex flex-col items-center justify-center gap-1.5 transition-colors aspect-square"
+        >
+          <ArrowRight className="w-5 h-5" />
+          <span className="text-[10px] font-medium">Retirada</span>
         </button>
         <button 
           onClick={() => navigate('/my-rentals')}
-          className="btn-outline py-3 flex items-center justify-center gap-1.5"
+          className="bg-secondary hover:bg-secondary/90 text-white rounded-xl p-3 flex flex-col items-center justify-center gap-1.5 transition-colors aspect-square"
         >
-          <Building2 className="w-4 h-4" />
-          <span>Meus Aluguéis</span>
+          <Building2 className="w-5 h-5" />
+          <span className="text-[10px] font-medium text-center leading-tight">Meus Aluguéis</span>
+        </button>
+        <button 
+          onClick={() => navigate('/bonus')}
+          className="bg-secondary hover:bg-secondary/90 text-white rounded-xl p-3 flex flex-col items-center justify-center gap-1.5 transition-colors aspect-square"
+        >
+          <Gift className="w-5 h-5" />
+          <span className="text-[10px] font-medium text-center leading-tight">Bônus Check-in</span>
         </button>
       </div>
 
