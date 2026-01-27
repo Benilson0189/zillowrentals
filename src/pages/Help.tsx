@@ -118,7 +118,10 @@ const Help: React.FC = () => {
 
       {/* Terms & Privacy */}
       <div className="mx-3 mt-4 space-y-2">
-        <button className="glass-card w-full p-3 flex items-center justify-between hover:bg-foreground/5 transition-colors">
+        <button 
+          onClick={() => navigate('/terms')}
+          className="glass-card w-full p-3 flex items-center justify-between hover:bg-foreground/5 transition-colors"
+        >
           <div className="flex items-center gap-2">
             <FileText className="w-4 h-4 text-muted-foreground" />
             <span className="text-sm text-foreground">Termos de Uso</span>
@@ -126,7 +129,10 @@ const Help: React.FC = () => {
           <ChevronRight className="w-4 h-4 text-muted-foreground" />
         </button>
         
-        <button className="glass-card w-full p-3 flex items-center justify-between hover:bg-foreground/5 transition-colors">
+        <button 
+          onClick={() => navigate('/privacy')}
+          className="glass-card w-full p-3 flex items-center justify-between hover:bg-foreground/5 transition-colors"
+        >
           <div className="flex items-center gap-2">
             <FileText className="w-4 h-4 text-muted-foreground" />
             <span className="text-sm text-foreground">Política de Privacidade</span>

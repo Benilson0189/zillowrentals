@@ -18,6 +18,8 @@ import {
   HelpCircle,
   Shield,
   Clock,
+  Info,
+  Hash,
 } from 'lucide-react';
 import { toast } from 'sonner';
 import { useAuth } from '@/hooks/useAuth';
@@ -157,6 +159,13 @@ const Profile: React.FC = () => {
       color: 'text-muted-foreground',
       onClick: () => navigate('/help'),
     },
+    {
+      icon: Info,
+      label: 'Sobre Nós',
+      subtitle: 'Conheça a plataforma',
+      color: 'text-secondary',
+      onClick: () => navigate('/about'),
+    },
   ];
 
   return (
@@ -173,7 +182,10 @@ const Profile: React.FC = () => {
             <p className="text-sm font-medium text-foreground">
               {profile?.full_name || 'Usuário'}
             </p>
-            <p className="text-xs text-muted-foreground">{profile?.phone}</p>
+            <div className="flex items-center gap-1 text-xs text-muted-foreground">
+              <Hash className="w-3 h-3" />
+              <span className="font-mono">{profile?.display_id || '...'}</span>
+            </div>
           </div>
         </div>
         <button className="relative p-1.5 rounded-full hover:bg-foreground/10">

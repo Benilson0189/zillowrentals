@@ -21,6 +21,9 @@ import NotFound from "./pages/NotFound";
 import Bonus from "./pages/Bonus";
 import Help from "./pages/Help";
 import Settings from "./pages/Settings";
+import TermsOfUse from "./pages/TermsOfUse";
+import PrivacyPolicy from "./pages/PrivacyPolicy";
+import AboutUs from "./pages/AboutUs";
 
 const queryClient = new QueryClient();
 
@@ -102,6 +105,21 @@ const App = () => (
             <Route path="/settings" element={
               <ProtectedRoute>
                 <Settings />
+              </ProtectedRoute>
+            } />
+            <Route path="/terms" element={
+              <ProtectedRoute>
+                <TermsOfUse />
+              </ProtectedRoute>
+            } />
+            <Route path="/privacy" element={
+              <ProtectedRoute>
+                <PrivacyPolicy />
+              </ProtectedRoute>
+            } />
+            <Route path="/about" element={
+              <ProtectedRoute>
+                <AboutUs />
               </ProtectedRoute>
             } />
             <Route path="*" element={<NotFound />} />
