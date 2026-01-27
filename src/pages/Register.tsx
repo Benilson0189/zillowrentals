@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useNavigate, useSearchParams } from 'react-router-dom';
+import { useNavigate, useSearchParams, useParams } from 'react-router-dom';
 import { Lock, User, Eye, EyeOff } from 'lucide-react';
 import AuthLayout from '@/components/AuthLayout';
 import Logo from '@/components/Logo';
@@ -12,7 +12,9 @@ const Register: React.FC = () => {
   const navigate = useNavigate();
   const { signUpWithPhone, user } = useAuth();
   const [searchParams] = useSearchParams();
-  const inviteCode = searchParams.get('inviteCode') || '';
+  const { inviteCode: urlInviteCode } = useParams();
+  // Support both /r/:inviteCode and /register?inviteCode=...
+  const inviteCode = urlInviteCode || searchParams.get('inviteCode') || '';
 
   const [phone, setPhone] = useState('');
   const [countryCode, setCountryCode] = useState('+244');

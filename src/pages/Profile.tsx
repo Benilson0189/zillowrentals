@@ -146,16 +146,16 @@ const Profile: React.FC = () => {
     {
       icon: Gift,
       label: 'Bônus',
-      subtitle: 'Ver bônus disponíveis',
+      subtitle: 'Check-in diário',
       color: 'text-purple-500',
-      onClick: () => toast.info('Em breve'),
+      onClick: () => navigate('/bonus'),
     },
     {
       icon: HelpCircle,
       label: 'Ajuda',
       subtitle: 'Suporte e FAQ',
       color: 'text-muted-foreground',
-      onClick: () => toast.info('Em breve'),
+      onClick: () => navigate('/help'),
     },
   ];
 

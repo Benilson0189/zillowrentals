@@ -34,7 +34,8 @@ const Team: React.FC = () => {
   const { data: teamData, isLoading } = useTeamMembers();
 
   const inviteCode = profile?.invite_code || '';
-  const inviteLink = `${window.location.origin}/register?inviteCode=${inviteCode}`;
+  // Shortened invite link using just the code
+  const inviteLink = `${window.location.origin}/r/${inviteCode}`;
 
   const handleCopyLink = () => {
     navigator.clipboard.writeText(inviteLink);
