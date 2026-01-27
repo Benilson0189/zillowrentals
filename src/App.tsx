@@ -18,6 +18,9 @@ import DepositFlow from "./pages/DepositFlow";
 import WithdrawalFlow from "./pages/WithdrawalFlow";
 import Admin from "./pages/Admin";
 import NotFound from "./pages/NotFound";
+import Bonus from "./pages/Bonus";
+import Help from "./pages/Help";
+import Settings from "./pages/Settings";
 
 const queryClient = new QueryClient();
 
@@ -32,6 +35,8 @@ const App = () => (
             <Route path="/" element={<Navigate to="/login" replace />} />
             <Route path="/login" element={<Login />} />
             <Route path="/register" element={<Register />} />
+            {/* Short invite link redirect */}
+            <Route path="/r/:inviteCode" element={<Register />} />
             <Route path="/dashboard" element={
               <ProtectedRoute>
                 <Dashboard />
@@ -82,6 +87,21 @@ const App = () => (
             <Route path="/admin" element={
               <ProtectedRoute>
                 <Admin />
+              </ProtectedRoute>
+            } />
+            <Route path="/bonus" element={
+              <ProtectedRoute>
+                <Bonus />
+              </ProtectedRoute>
+            } />
+            <Route path="/help" element={
+              <ProtectedRoute>
+                <Help />
+              </ProtectedRoute>
+            } />
+            <Route path="/settings" element={
+              <ProtectedRoute>
+                <Settings />
               </ProtectedRoute>
             } />
             <Route path="*" element={<NotFound />} />

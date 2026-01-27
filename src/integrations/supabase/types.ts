@@ -14,6 +14,30 @@ export type Database = {
   }
   public: {
     Tables: {
+      daily_checkins: {
+        Row: {
+          bonus_amount: number
+          checked_in_at: string
+          created_at: string
+          id: string
+          user_id: string
+        }
+        Insert: {
+          bonus_amount: number
+          checked_in_at?: string
+          created_at?: string
+          id?: string
+          user_id: string
+        }
+        Update: {
+          bonus_amount?: number
+          checked_in_at?: string
+          created_at?: string
+          id?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       investment_plans: {
         Row: {
           color_class: string | null
