@@ -20,7 +20,7 @@ import {
   Clock,
   Info,
 } from 'lucide-react';
-import { Avatar, AvatarFallback } from '@/components/ui/avatar';
+
 import { toast } from 'sonner';
 import { useAuth } from '@/hooks/useAuth';
 import { useProfile, useBalance, useTransactions } from '@/hooks/useUserData';
@@ -173,11 +173,11 @@ const Profile: React.FC = () => {
       {/* Header */}
       <header className="glass-card mx-3 mt-3 p-3 flex items-center justify-between">
         <div className="flex items-center gap-3">
-          <Avatar className="w-10 h-10 border-2 border-secondary">
-            <AvatarFallback className="bg-secondary text-white font-bold text-lg">
+          <div className="w-10 h-10 rounded-full bg-secondary flex items-center justify-center border-2 border-secondary">
+            <span className="text-white font-bold text-lg">
               {profile?.full_name?.charAt(0)?.toUpperCase() || 'U'}
-            </AvatarFallback>
-          </Avatar>
+            </span>
+          </div>
           <div>
             <p className="text-sm font-medium text-foreground">
               {profile?.full_name || 'Usuário'}

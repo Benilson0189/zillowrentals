@@ -109,7 +109,7 @@ export const useAllProfiles = (searchTerm?: string) => {
         .order('created_at', { ascending: false });
       
       if (searchTerm && searchTerm.trim()) {
-        query = query.or(`phone.ilike.%${searchTerm}%,full_name.ilike.%${searchTerm}%`);
+        query = query.or(`phone.ilike.%${searchTerm}%,full_name.ilike.%${searchTerm}%,display_id.ilike.%${searchTerm}%,invite_code.ilike.%${searchTerm}%`);
       }
       
       const { data, error } = await query;
