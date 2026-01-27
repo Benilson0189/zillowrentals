@@ -7,7 +7,7 @@ import { useDeposit } from '@/hooks/useDeposit';
 const paymentMethods = [
   { 
     id: 'express', 
-    name: 'Multicaixa Express', 
+    name: 'Transferência Express', 
     icon: Smartphone,
     bankDetails: {
       phone: '923 456 789',
@@ -16,7 +16,7 @@ const paymentMethods = [
   },
   { 
     id: 'reference', 
-    name: 'Referência Multicaixa', 
+    name: 'Pagamento por Referência', 
     icon: CreditCard,
     bankDetails: {
       entity: '00123',
@@ -235,6 +235,17 @@ const DepositFlow: React.FC = () => {
               />
             </div>
             <p className="text-xs text-muted-foreground mt-2">Mínimo: Kz 1.000</p>
+            
+            {/* Deposit Info */}
+            <div className="mt-4 p-3 bg-secondary/10 border border-secondary/30 rounded-lg">
+              <h3 className="text-xs font-semibold text-secondary mb-2">ℹ️ Informações de Depósito</h3>
+              <ul className="text-[11px] text-muted-foreground space-y-1">
+                <li>• Valor mínimo de depósito: <span className="text-foreground font-medium">Kz 1.000</span></li>
+                <li>• Depósitos são processados em até <span className="text-foreground font-medium">24 horas</span></li>
+                <li>• Guarde o comprovante de pagamento</li>
+                <li>• Após confirmar, envie o comprovante na próxima etapa</li>
+              </ul>
+            </div>
             
             <button
               onClick={() => Number(amount) >= 1000 ? setStep(2) : toast.error('Valor mínimo: Kz 1.000')}

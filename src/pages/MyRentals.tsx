@@ -97,6 +97,17 @@ const MyRentals: React.FC = () => {
               const plan = investment.plan;
               const propertyImage = propertyImages[Number(investment.amount)] || property1;
               const daysRemaining = getDaysRemaining(investment.end_date);
+              const startDate = new Date(investment.start_date);
+              
+              const formatFullDate = (date: Date) => {
+                const day = date.getDate().toString().padStart(2, '0');
+                const month = (date.getMonth() + 1).toString().padStart(2, '0');
+                const year = date.getFullYear();
+                const hours = date.getHours().toString().padStart(2, '0');
+                const minutes = date.getMinutes().toString().padStart(2, '0');
+                const seconds = date.getSeconds().toString().padStart(2, '0');
+                return `${day}/${month}/${year} às ${hours}:${minutes}:${seconds}`;
+              };
               
               return (
                 <div key={investment.id} className="glass-card overflow-hidden">
@@ -138,6 +149,14 @@ const MyRentals: React.FC = () => {
                             {daysRemaining} dias restantes
                           </span>
                         </div>
+                      </div>
+                      
+                      {/* Full timestamp */}
+                      <div className="mt-2 flex items-center gap-1">
+                        <Clock className="w-3 h-3 text-muted-foreground" />
+                        <span className="text-[10px] text-muted-foreground">
+                          Investido em: {formatFullDate(startDate)}
+                        </span>
                       </div>
                     </div>
                   </div>

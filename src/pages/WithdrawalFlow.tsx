@@ -111,12 +111,41 @@ const WithdrawalFlow: React.FC = () => {
                 max={availableBalance}
               />
             </div>
-            <p className="text-xs text-muted-foreground mt-2">Mínimo: Kz 5.000</p>
+            <p className="text-xs text-muted-foreground mt-2">Mínimo: Kz 1.800</p>
+            
+            {/* Withdrawal Info */}
+            <div className="mt-4 p-3 bg-warning/10 border border-warning/30 rounded-lg">
+              <h3 className="text-xs font-semibold text-warning mb-2">⚠️ Informações de Saque</h3>
+              <ul className="text-[11px] text-muted-foreground space-y-1">
+                <li>• Valor mínimo de saque: <span className="text-foreground font-medium">Kz 1.800</span></li>
+                <li>• Taxa de saque: <span className="text-warning font-medium">14%</span> sobre o valor</li>
+                <li>• Saques são processados em até <span className="text-foreground font-medium">48 horas</span></li>
+                <li>• O valor será enviado para a conta bancária selecionada</li>
+              </ul>
+            </div>
+
+            {/* Fee Preview */}
+            {amount && Number(amount) >= 1800 && (
+              <div className="mt-3 p-3 bg-foreground/5 rounded-lg">
+                <div className="flex justify-between text-xs mb-1">
+                  <span className="text-muted-foreground">Valor solicitado:</span>
+                  <span className="text-foreground">Kz {Number(amount).toLocaleString('pt-AO')}</span>
+                </div>
+                <div className="flex justify-between text-xs mb-1">
+                  <span className="text-muted-foreground">Taxa (14%):</span>
+                  <span className="text-warning">- Kz {(Number(amount) * 0.14).toLocaleString('pt-AO')}</span>
+                </div>
+                <div className="flex justify-between text-xs font-medium border-t border-foreground/10 pt-1 mt-1">
+                  <span className="text-foreground">Você receberá:</span>
+                  <span className="text-success">Kz {(Number(amount) * 0.86).toLocaleString('pt-AO')}</span>
+                </div>
+              </div>
+            )}
             
             <button
               onClick={() => {
-                if (Number(amount) < 5000) {
-                  toast.error('Valor mínimo: Kz 5.000');
+                if (Number(amount) < 1800) {
+                  toast.error('Valor mínimo: Kz 1.800');
                   return;
                 }
                 if (Number(amount) > availableBalance) {
@@ -186,9 +215,17 @@ const WithdrawalFlow: React.FC = () => {
             )}
 
             <div className="mt-4 p-3 bg-foreground/5 rounded-lg">
-              <div className="flex justify-between text-xs">
-                <span className="text-muted-foreground">Valor do saque:</span>
-                <span className="text-foreground font-medium">Kz {Number(amount).toLocaleString('pt-AO')}</span>
+              <div className="flex justify-between text-xs mb-1">
+                <span className="text-muted-foreground">Valor solicitado:</span>
+                <span className="text-foreground">Kz {Number(amount).toLocaleString('pt-AO')}</span>
+              </div>
+              <div className="flex justify-between text-xs mb-1">
+                <span className="text-muted-foreground">Taxa (14%):</span>
+                <span className="text-warning">- Kz {(Number(amount) * 0.14).toLocaleString('pt-AO')}</span>
+              </div>
+              <div className="flex justify-between text-xs font-medium border-t border-foreground/10 pt-1 mt-1">
+                <span className="text-foreground">Você receberá:</span>
+                <span className="text-success font-medium">Kz {(Number(amount) * 0.86).toLocaleString('pt-AO')}</span>
               </div>
             </div>
 
