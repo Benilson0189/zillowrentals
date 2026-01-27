@@ -119,7 +119,7 @@ const WithdrawalFlow: React.FC = () => {
               <ul className="text-[11px] text-muted-foreground space-y-1">
                 <li>• Valor mínimo de saque: <span className="text-foreground font-medium">Kz 1.800</span></li>
                 <li>• Taxa de saque: <span className="text-warning font-medium">14%</span> sobre o valor</li>
-                <li>• Saques são processados em até <span className="text-foreground font-medium">48 horas</span></li>
+                <li>• Saques são processados em <span className="text-foreground font-medium">0 a 24 horas</span></li>
                 <li>• O valor será enviado para a conta bancária selecionada</li>
               </ul>
             </div>

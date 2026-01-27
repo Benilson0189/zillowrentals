@@ -55,7 +55,7 @@ const Team: React.FC = () => {
   const levelB = teamData?.levelB || [];
   const levelC = teamData?.levelC || [];
 
-  const totalActive = 0; // Would need to check investments for each user
+  const totalActive = teamData?.activeCount || 0;
   const totalInvited = level1.length + levelB.length + levelC.length;
 
   const getFilteredUsers = () => {
@@ -191,16 +191,25 @@ const Team: React.FC = () => {
                   className="w-full p-3 flex items-center justify-between"
                 >
                   <div className="flex items-center gap-2">
-                    <div className="w-8 h-8 rounded-full flex items-center justify-center bg-muted/20">
-                      <UserX className="w-4 h-4 text-muted-foreground" />
+                    <div className={`w-8 h-8 rounded-full flex items-center justify-center ${user.isActive ? 'bg-success/20' : 'bg-muted/20'}`}>
+                      {user.isActive ? (
+                        <UserCheck className="w-4 h-4 text-success" />
+                      ) : (
+                        <UserX className="w-4 h-4 text-muted-foreground" />
+                      )}
                     </div>
                     <div className="text-left">
                       <p className="text-sm font-medium text-foreground">
                         {user.full_name || 'Usuário'}
                       </p>
-                      <p className="text-[10px] text-muted-foreground">
-                        Nível {user.level === 1 ? 'A' : user.level === 2 ? 'B' : 'C'}
-                      </p>
+                      <div className="flex items-center gap-2">
+                        <p className="text-[10px] text-muted-foreground">
+                          Nível {user.level === 1 ? 'A' : user.level === 2 ? 'B' : 'C'}
+                        </p>
+                        {user.isActive && (
+                          <span className="text-[9px] bg-success/20 text-success px-1.5 py-0.5 rounded-full">Ativo</span>
+                        )}
+                      </div>
                     </div>
                   </div>
                   <div className="flex items-center gap-1.5">
@@ -227,8 +236,10 @@ const Team: React.FC = () => {
                         </span>
                       </div>
                     </div>
-                    <div className="mt-2 bg-foreground/5 rounded-lg p-2 text-center">
-                      <p className="text-xs text-muted-foreground">Sem investimentos ativos</p>
+                    <div className={`mt-2 rounded-lg p-2 text-center ${user.isActive ? 'bg-success/10' : 'bg-foreground/5'}`}>
+                      <p className={`text-xs ${user.isActive ? 'text-success' : 'text-muted-foreground'}`}>
+                        {user.isActive ? '✓ Com investimento ativo' : 'Sem investimentos ativos'}
+                      </p>
                     </div>
                   </div>
                 )}
