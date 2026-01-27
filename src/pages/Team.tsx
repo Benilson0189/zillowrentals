@@ -148,9 +148,9 @@ const Team: React.FC = () => {
           onClick={() => setFilterLevel(filterLevel === 1 ? null : 1)}
           className={`glass-card p-2 text-center transition-colors ${filterLevel === 1 ? 'ring-2 ring-secondary' : ''}`}
         >
-          <p className="text-[10px] text-muted-foreground mb-0.5">Nível 1</p>
+          <p className="text-[10px] text-muted-foreground mb-0.5">Nível A</p>
           <p className="text-sm font-bold text-foreground">{level1.length}</p>
-          <p className="text-[10px] text-success">0 ativos</p>
+          <p className="text-[10px] text-success">20% comissão</p>
         </button>
         <button
           onClick={() => setFilterLevel(filterLevel === 2 ? null : 2)}
@@ -158,7 +158,7 @@ const Team: React.FC = () => {
         >
           <p className="text-[10px] text-muted-foreground mb-0.5">Nível B</p>
           <p className="text-sm font-bold text-foreground">{levelB.length}</p>
-          <p className="text-[10px] text-success">0 ativos</p>
+          <p className="text-[10px] text-success">3% comissão</p>
         </button>
         <button
           onClick={() => setFilterLevel(filterLevel === 3 ? null : 3)}
@@ -166,14 +166,14 @@ const Team: React.FC = () => {
         >
           <p className="text-[10px] text-muted-foreground mb-0.5">Nível C</p>
           <p className="text-sm font-bold text-foreground">{levelC.length}</p>
-          <p className="text-[10px] text-success">0 ativos</p>
+          <p className="text-[10px] text-success">1% comissão</p>
         </button>
       </div>
 
       {/* Invited Users List */}
       <div className="mx-3 mt-3">
         <h2 className="text-sm font-medium text-foreground mb-2">
-          Convidados {filterLevel ? `(Nível ${filterLevel === 1 ? '1' : filterLevel === 2 ? 'B' : 'C'})` : ''}
+          Convidados {filterLevel ? `(Nível ${filterLevel === 1 ? 'A' : filterLevel === 2 ? 'B' : 'C'})` : ''}
         </h2>
         
         {filteredUsers.length === 0 ? (
@@ -198,7 +198,7 @@ const Team: React.FC = () => {
                         {user.full_name || 'Usuário'}
                       </p>
                       <p className="text-[10px] text-muted-foreground">
-                        Nível {user.level === 1 ? '1' : user.level === 2 ? 'B' : 'C'}
+                        Nível {user.level === 1 ? 'A' : user.level === 2 ? 'B' : 'C'}
                       </p>
                     </div>
                   </div>
