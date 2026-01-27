@@ -11,6 +11,7 @@ import {
   Gift
 } from 'lucide-react';
 import { useInvestmentPlans } from '@/hooks/useUserData';
+import zillowLogo from '@/assets/zillow-logo.jpg';
 
 // Import property images
 import property1 from '@/assets/property-1.jpg';
@@ -50,15 +51,12 @@ const Dashboard: React.FC = () => {
   return (
     <div className="min-h-screen bg-background pb-20">
       {/* Hero Logo Section */}
-      <div className="mx-3 mt-3 glass-card p-6 flex flex-col items-center justify-center">
-        <div className="w-20 h-20 bg-secondary rounded-2xl flex items-center justify-center mb-4 shadow-lg">
-          <Home className="w-12 h-12 text-white" />
-        </div>
-        <h1 className="text-3xl font-bold text-foreground tracking-tight">Zillow</h1>
-        <span className="text-sm text-secondary font-semibold tracking-[0.3em] mt-1">RENTALS</span>
-        <p className="text-xs text-muted-foreground mt-3 text-center">
-          Seu portal de investimento em aluguéis nos EUA
-        </p>
+      <div className="mx-3 mt-3">
+        <img 
+          src={zillowLogo} 
+          alt="Zillow Rentals" 
+          className="w-full h-auto rounded-2xl shadow-lg"
+        />
       </div>
 
       {/* Quick Actions */}
