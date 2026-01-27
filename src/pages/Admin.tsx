@@ -122,12 +122,25 @@ const Admin: React.FC = () => {
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
           <Input
             type="text"
-            placeholder="Buscar usuário por telefone ou nome..."
+            placeholder="Buscar por telefone, nome ou ID..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
             className="pl-10 bg-foreground/5 border-foreground/10"
           />
         </div>
+        {searchTerm && (
+          <div className="flex items-center justify-between mt-2">
+            <p className="text-xs text-muted-foreground">
+              {allProfiles?.length || 0} resultado(s) para "{searchTerm}"
+            </p>
+            <button 
+              onClick={() => setSearchTerm('')}
+              className="text-xs text-secondary hover:underline"
+            >
+              Limpar
+            </button>
+          </div>
+        )}
       </div>
 
       {/* Stats Grid */}
@@ -231,15 +244,26 @@ const Admin: React.FC = () => {
               allProfiles?.map((profile) => (
                 <div key={profile.id} className="glass-card p-3">
                   <div className="flex justify-between items-center">
-                    <div>
-                      <p className="text-sm font-medium text-foreground">
-                        {profile.full_name || 'Sem nome'}
-                      </p>
-                      <p className="text-xs text-muted-foreground">{profile.phone}</p>
-                      <p className="text-[10px] text-secondary">Código: {profile.invite_code}</p>
+                    <div className="flex items-center gap-3">
+                      <div className="w-10 h-10 rounded-full bg-secondary flex items-center justify-center">
+                        <span className="text-white font-bold">
+                          {profile.full_name?.charAt(0)?.toUpperCase() || 'U'}
+                        </span>
+                      </div>
+                      <div>
+                        <p className="text-sm font-medium text-foreground">
+                          {profile.full_name || 'Sem nome'}
+                        </p>
+                        <p className="text-xs text-muted-foreground">{profile.phone}</p>
+                        <div className="flex items-center gap-2">
+                          <p className="text-[10px] text-secondary font-mono">{profile.display_id}</p>
+                          <span className="text-[10px] text-muted-foreground">•</span>
+                          <p className="text-[10px] text-muted-foreground">Código: {profile.invite_code}</p>
+                        </div>
+                      </div>
                     </div>
                     <p className="text-xs text-muted-foreground">
-                      {new Date(profile.created_at).toLocaleDateString('en-US')}
+                      {new Date(profile.created_at).toLocaleDateString('pt-AO')}
                     </p>
                   </div>
                 </div>
