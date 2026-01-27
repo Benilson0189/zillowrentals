@@ -11,7 +11,8 @@ import {
   UserCheck,
   UserX,
   ChevronDown,
-  ChevronUp
+  ChevronUp,
+  Share2
 } from 'lucide-react';
 import { toast } from 'sonner';
 import { useProfile, useTeamMembers } from '@/hooks/useUserData';
@@ -40,6 +41,13 @@ const Team: React.FC = () => {
     setCopied(true);
     toast.success('Link copiado!');
     setTimeout(() => setCopied(false), 2000);
+  };
+
+  const handleCopyCode = () => {
+    if (inviteCode) {
+      navigator.clipboard.writeText(inviteCode);
+      toast.success('Código copiado!');
+    }
   };
 
   const level1 = teamData?.level1 || [];
@@ -80,9 +88,25 @@ const Team: React.FC = () => {
         <h1 className="text-base font-semibold text-foreground">Minha Equipe</h1>
       </header>
 
-      {/* Invite Link */}
+      {/* Invite Code Card */}
       <div className="glass-card mx-3 mt-3 p-3">
-        <p className="text-xs text-muted-foreground mb-1.5">Seu link de convite</p>
+        <div className="flex items-center justify-between mb-3">
+          <div className="flex items-center gap-2">
+            <Share2 className="w-4 h-4 text-secondary" />
+            <div>
+              <p className="text-xs text-muted-foreground">Seu código de convite</p>
+              <p className="text-lg font-bold text-foreground">{inviteCode || '---'}</p>
+            </div>
+          </div>
+          <button 
+            onClick={handleCopyCode}
+            className="p-2 rounded-lg bg-secondary/10 text-secondary hover:bg-secondary/20"
+          >
+            <Copy className="w-4 h-4" />
+          </button>
+        </div>
+        
+        <p className="text-xs text-muted-foreground mb-1.5">Link de convite</p>
         <div className="flex items-center gap-2">
           <div className="flex-1 input-dark py-1.5 px-3 text-xs text-muted-foreground truncate">
             {inviteLink}
