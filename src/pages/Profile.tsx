@@ -19,8 +19,8 @@ import {
   Shield,
   Clock,
   Info,
-  Hash,
 } from 'lucide-react';
+import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { toast } from 'sonner';
 import { useAuth } from '@/hooks/useAuth';
 import { useProfile, useBalance, useTransactions } from '@/hooks/useUserData';
@@ -172,20 +172,19 @@ const Profile: React.FC = () => {
     <div className="min-h-screen bg-background">
       {/* Header */}
       <header className="glass-card mx-3 mt-3 p-3 flex items-center justify-between">
-        <div className="flex items-center gap-2">
-          <div className="w-8 h-8 bg-secondary rounded-full flex items-center justify-center">
-            <span className="text-white font-medium text-sm">
+        <div className="flex items-center gap-3">
+          <Avatar className="w-10 h-10 border-2 border-secondary">
+            <AvatarFallback className="bg-secondary text-white font-bold text-lg">
               {profile?.full_name?.charAt(0)?.toUpperCase() || 'U'}
-            </span>
-          </div>
+            </AvatarFallback>
+          </Avatar>
           <div>
             <p className="text-sm font-medium text-foreground">
               {profile?.full_name || 'Usuário'}
             </p>
-            <div className="flex items-center gap-1 text-xs text-muted-foreground">
-              <Hash className="w-3 h-3" />
-              <span className="font-mono">{profile?.display_id || '...'}</span>
-            </div>
+            <p className="text-xs text-muted-foreground font-mono tracking-wider">
+              {profile?.display_id || '...'}
+            </p>
           </div>
         </div>
         <button className="relative p-1.5 rounded-full hover:bg-foreground/10">
