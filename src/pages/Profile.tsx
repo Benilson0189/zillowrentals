@@ -105,21 +105,21 @@ const Profile: React.FC = () => {
     }
   };
 
-  const getStatusLabel = (status: string) => {
+  const getStatusLabel = (status: string, type: 'deposit' | 'withdrawal') => {
     switch (status) {
-      case 'approved': return 'Aprovado';
+      case 'approved': return type === 'deposit' ? 'Concluído' : 'Pago';
       case 'rejected': return 'Rejeitado';
-      default: return 'Pendente';
+      default: return 'Em processamento';
     }
   };
 
   const menuItems = [
-    { icon: ArrowDownCircle, label: 'Recarga', color: 'text-success', onClick: () => navigate('/deposit') },
-    { icon: ArrowUpCircle, label: 'Retirada', color: 'text-warning', onClick: () => navigate('/withdrawal') },
-    { icon: Clock, label: 'Recargas', color: 'text-success', onClick: () => setShowDepositsModal(true) },
-    { icon: Clock, label: 'Retiradas', color: 'text-warning', onClick: () => setShowWithdrawalsModal(true) },
+    { icon: ArrowDownCircle, label: 'Fazer Depósito', color: 'text-success', onClick: () => navigate('/deposit') },
+    { icon: ArrowUpCircle, label: 'Fazer Saque', color: 'text-warning', onClick: () => navigate('/withdrawal') },
+    { icon: Clock, label: 'Histórico Depósitos', color: 'text-success', onClick: () => setShowDepositsModal(true) },
+    { icon: Clock, label: 'Histórico Saques', color: 'text-warning', onClick: () => setShowWithdrawalsModal(true) },
     { icon: CreditCard, label: 'Contas Bancárias', color: 'text-secondary', onClick: () => setShowAccountsModal(true) },
-    { icon: Gift, label: 'Bônus', color: 'text-purple-500', onClick: () => navigate('/bonus') },
+    { icon: Gift, label: 'Bônus', color: 'text-purple', onClick: () => navigate('/bonus') },
     { icon: HelpCircle, label: 'Ajuda', color: 'text-muted-foreground', onClick: () => navigate('/help') },
     { icon: Info, label: 'Sobre Nós', color: 'text-secondary', onClick: () => navigate('/about') },
   ];
@@ -341,8 +341,8 @@ const Profile: React.FC = () => {
                     <p className="text-sm font-medium text-foreground">
                       $ {Number(deposit.amount).toLocaleString('en-US')}
                     </p>
-                    <span className={`text-[10px] px-2 py-0.5 rounded-full ${getStatusColor(deposit.status)}`}>
-                      {getStatusLabel(deposit.status)}
+                    <span className={`text-[10px] px-2 py-0.5 rounded-full font-medium ${getStatusColor(deposit.status)}`}>
+                      {getStatusLabel(deposit.status, 'deposit')}
                     </span>
                   </div>
                   <p className="text-xs text-muted-foreground">
@@ -380,8 +380,8 @@ const Profile: React.FC = () => {
                     <p className="text-sm font-medium text-foreground">
                       $ {Number(withdrawal.amount).toLocaleString('en-US')}
                     </p>
-                    <span className={`text-[10px] px-2 py-0.5 rounded-full ${getStatusColor(withdrawal.status)}`}>
-                      {getStatusLabel(withdrawal.status)}
+                    <span className={`text-[10px] px-2 py-0.5 rounded-full font-medium ${getStatusColor(withdrawal.status)}`}>
+                      {getStatusLabel(withdrawal.status, 'withdrawal')}
                     </span>
                   </div>
                   <p className="text-xs text-muted-foreground">
