@@ -240,6 +240,7 @@ export type Database = {
           created_at: string
           end_date: string
           id: string
+          last_payout_at: string | null
           plan_id: string
           start_date: string
           status: string
@@ -251,6 +252,7 @@ export type Database = {
           created_at?: string
           end_date: string
           id?: string
+          last_payout_at?: string | null
           plan_id: string
           start_date?: string
           status?: string
@@ -262,6 +264,7 @@ export type Database = {
           created_at?: string
           end_date?: string
           id?: string
+          last_payout_at?: string | null
           plan_id?: string
           start_date?: string
           status?: string
