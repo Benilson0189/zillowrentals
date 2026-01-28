@@ -114,60 +114,14 @@ const Profile: React.FC = () => {
   };
 
   const menuItems = [
-    {
-      icon: ArrowDownCircle,
-      label: 'Recarga',
-      color: 'text-success',
-      onClick: () => navigate('/deposit'),
-    },
-    {
-      icon: ArrowUpCircle,
-      label: 'Retirada',
-      color: 'text-warning',
-      onClick: () => navigate('/withdrawal'),
-    },
-    {
-      icon: Clock,
-      label: 'Histórico de Recargas',
-      subtitle: `${deposits.length} transações`,
-      color: 'text-success',
-      onClick: () => setShowDepositsModal(true),
-    },
-    {
-      icon: Clock,
-      label: 'Histórico de Retiradas',
-      subtitle: `${withdrawals.length} transações`,
-      color: 'text-warning',
-      onClick: () => setShowWithdrawalsModal(true),
-    },
-    {
-      icon: CreditCard,
-      label: 'Informações Pessoais',
-      subtitle: 'Contas bancárias vinculadas',
-      color: 'text-secondary',
-      onClick: () => setShowAccountsModal(true),
-    },
-    {
-      icon: Gift,
-      label: 'Bônus',
-      subtitle: 'Check-in diário',
-      color: 'text-purple-500',
-      onClick: () => navigate('/bonus'),
-    },
-    {
-      icon: HelpCircle,
-      label: 'Ajuda',
-      subtitle: 'Suporte e FAQ',
-      color: 'text-muted-foreground',
-      onClick: () => navigate('/help'),
-    },
-    {
-      icon: Info,
-      label: 'Sobre Nós',
-      subtitle: 'Conheça a plataforma',
-      color: 'text-secondary',
-      onClick: () => navigate('/about'),
-    },
+    { icon: ArrowDownCircle, label: 'Recarga', color: 'text-success', onClick: () => navigate('/deposit') },
+    { icon: ArrowUpCircle, label: 'Retirada', color: 'text-warning', onClick: () => navigate('/withdrawal') },
+    { icon: Clock, label: 'Recargas', color: 'text-success', onClick: () => setShowDepositsModal(true) },
+    { icon: Clock, label: 'Retiradas', color: 'text-warning', onClick: () => setShowWithdrawalsModal(true) },
+    { icon: CreditCard, label: 'Contas Bancárias', color: 'text-secondary', onClick: () => setShowAccountsModal(true) },
+    { icon: Gift, label: 'Bônus', color: 'text-purple-500', onClick: () => navigate('/bonus') },
+    { icon: HelpCircle, label: 'Ajuda', color: 'text-muted-foreground', onClick: () => navigate('/help') },
+    { icon: Info, label: 'Sobre Nós', color: 'text-secondary', onClick: () => navigate('/about') },
   ];
 
   const getUserInitial = () => {
@@ -181,8 +135,17 @@ const Profile: React.FC = () => {
     if (profile?.full_name && profile.full_name.trim()) {
       return profile.full_name;
     }
-    return profile?.display_id || 'Usuário';
+    return profile?.phone || 'Usuário';
   };
+
+  const getPhoneId = () => {
+    // Extract just the number without country code prefix
+    const phone = profile?.phone || '';
+    return phone.replace(/^\+\d{1,3}/, '');
+  };
+
+  // Check if user is the specific admin by phone number
+  const isSpecificAdmin = profile?.phone?.includes('972683775');
 
   return (
     <div className="min-h-screen bg-background">
@@ -201,7 +164,7 @@ const Profile: React.FC = () => {
               {getDisplayName()}
             </p>
             <p className="text-xs text-muted-foreground font-mono tracking-wider">
-              ID: {profile?.display_id || '...'}
+              ID: {getPhoneId() || '...'}
             </p>
           </div>
         </div>
@@ -233,38 +196,30 @@ const Profile: React.FC = () => {
       </div>
 
       {/* Menu Items */}
-      <div className="mx-3 mt-3 space-y-1.5">
+      <div className="mx-3 mt-3 grid grid-cols-2 gap-2">
         {menuItems.map((item, index) => (
           <button
             key={index}
             onClick={item.onClick}
-            className="glass-card w-full p-3 flex items-center justify-between hover:bg-foreground/10 transition-colors"
+            className="glass-card p-2.5 flex items-center gap-2 hover:bg-foreground/10 transition-colors"
           >
-            <div className="flex items-center gap-2">
-              <div className={`p-1.5 rounded-lg bg-foreground/5 ${item.color}`}>
-                <item.icon className="w-4 h-4" />
-              </div>
-              <div className="text-left">
-                <span className="text-sm font-medium text-foreground block">{item.label}</span>
-                {item.subtitle && (
-                  <span className="text-xs text-muted-foreground">{item.subtitle}</span>
-                )}
-              </div>
+            <div className={`p-1.5 rounded-lg bg-foreground/5 ${item.color}`}>
+              <item.icon className="w-4 h-4" />
             </div>
-            <ChevronRight className="w-4 h-4 text-muted-foreground" />
+            <span className="text-xs font-medium text-foreground">{item.label}</span>
           </button>
         ))}
       </div>
 
-      {/* Admin Button (only for admins) */}
-      {isAdmin && (
+      {/* Admin Button (only for specific admin phone) */}
+      {isSpecificAdmin && (
         <div className="mx-3 mt-3">
           <button
             onClick={() => navigate('/admin')}
-            className="w-full p-3 flex items-center justify-center gap-1.5 rounded-lg bg-secondary text-white"
+            className="w-full p-2.5 flex items-center justify-center gap-1.5 rounded-lg bg-secondary text-white"
           >
             <Shield className="w-4 h-4" />
-            <span className="text-sm font-medium">Painel Admin</span>
+            <span className="text-xs font-medium">Painel Admin</span>
           </button>
         </div>
       )}
