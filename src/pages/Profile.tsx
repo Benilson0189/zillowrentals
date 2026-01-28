@@ -169,22 +169,36 @@ const Profile: React.FC = () => {
     },
   ];
 
+  const getUserInitial = () => {
+    if (profile?.full_name && profile.full_name.trim()) {
+      return profile.full_name.charAt(0).toUpperCase();
+    }
+    return 'U';
+  };
+
+  const getDisplayName = () => {
+    if (profile?.full_name && profile.full_name.trim()) {
+      return profile.full_name;
+    }
+    return profile?.display_id || 'Usuário';
+  };
+
   return (
     <div className="min-h-screen bg-background">
       {/* Header */}
       <header className="glass-card mx-3 mt-3 p-3 flex items-center justify-between">
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-full bg-secondary flex items-center justify-center border-2 border-secondary">
-            <span className="text-white font-bold text-lg">
-              {profile?.full_name?.charAt(0)?.toUpperCase() || 'U'}
+          <div className="w-12 h-12 rounded-full bg-gradient-to-br from-secondary to-secondary/80 flex items-center justify-center border-2 border-secondary shadow-lg">
+            <span className="text-white font-bold text-xl">
+              {getUserInitial()}
             </span>
           </div>
           <div>
             <p className="text-sm font-medium text-foreground">
-              {profile?.full_name || 'Usuário'}
+              {getDisplayName()}
             </p>
             <p className="text-xs text-muted-foreground font-mono tracking-wider">
-              {profile?.display_id || '...'}
+              ID: {profile?.display_id || '...'}
             </p>
           </div>
         </div>
