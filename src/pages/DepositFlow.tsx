@@ -10,8 +10,7 @@ const paymentMethods = [
     name: 'Transferência Express', 
     icon: Smartphone,
     bankDetails: {
-      phone: '923 456 789',
-      name: 'ZILLOW RENTALS LLC',
+      expressNumber: '923 456 789',
     }
   },
   { 
@@ -21,7 +20,6 @@ const paymentMethods = [
     bankDetails: {
       entity: '00123',
       reference: '123 456 789',
-      name: 'ZILLOW RENTALS LLC',
     }
   },
   { 
@@ -42,8 +40,7 @@ interface PaymentMethod {
   name: string;
   icon: React.FC<{ className?: string }>;
   bankDetails: {
-    phone?: string;
-    name?: string;
+    expressNumber?: string;
     entity?: string;
     reference?: string;
     bank?: string;
@@ -65,14 +62,14 @@ const BankDetailsCard: React.FC<{ method: PaymentMethod }> = ({ method }) => {
     <div className="mt-4 p-3 bg-secondary/10 border border-secondary/30 rounded-lg">
       <h3 className="text-xs font-semibold text-secondary mb-3">Dados para Pagamento</h3>
       <div className="space-y-2">
-        {details.phone && (
+        {details.expressNumber && (
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-[10px] text-muted-foreground">Telefone</p>
-              <p className="text-sm font-medium text-foreground">{details.phone}</p>
+              <p className="text-[10px] text-muted-foreground">Número Express</p>
+              <p className="text-sm font-medium text-foreground">{details.expressNumber}</p>
             </div>
             <button 
-              onClick={() => copyToClipboard(details.phone!, 'Telefone')}
+              onClick={() => copyToClipboard(details.expressNumber!, 'Número Express')}
               className="p-1.5 hover:bg-foreground/10 rounded"
             >
               <Copy className="w-4 h-4 text-muted-foreground" />
@@ -135,14 +132,14 @@ const BankDetailsCard: React.FC<{ method: PaymentMethod }> = ({ method }) => {
             </button>
           </div>
         )}
-        {(details.accountName || details.name) && (
+        {details.accountName && (
           <div className="flex items-center justify-between">
             <div>
               <p className="text-[10px] text-muted-foreground">Nome</p>
-              <p className="text-sm font-medium text-foreground">{details.accountName || details.name}</p>
+              <p className="text-sm font-medium text-foreground">{details.accountName}</p>
             </div>
             <button 
-              onClick={() => copyToClipboard((details.accountName || details.name)!, 'Nome')}
+              onClick={() => copyToClipboard(details.accountName!, 'Nome')}
               className="p-1.5 hover:bg-foreground/10 rounded"
             >
               <Copy className="w-4 h-4 text-muted-foreground" />
