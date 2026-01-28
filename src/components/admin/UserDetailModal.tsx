@@ -87,20 +87,34 @@ const UserDetailModal: React.FC<UserDetailModalProps> = ({
 
   if (!profile) return null;
 
+  const getUserInitial = () => {
+    if (profile.full_name && profile.full_name.trim()) {
+      return profile.full_name.charAt(0).toUpperCase();
+    }
+    return 'U';
+  };
+
+  const getDisplayName = () => {
+    if (profile.full_name && profile.full_name.trim()) {
+      return profile.full_name;
+    }
+    return profile.display_id || 'Usuário';
+  };
+
   return (
     <>
       <Dialog open={isOpen} onOpenChange={onClose}>
         <DialogContent className="bg-background border-foreground/10 max-w-lg max-h-[90vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle className="text-foreground flex items-center gap-3">
-              <div className="w-10 h-10 rounded-full bg-secondary flex items-center justify-center">
-                <span className="text-white font-bold">
-                  {profile.full_name?.charAt(0)?.toUpperCase() || 'U'}
+              <div className="w-12 h-12 rounded-full bg-gradient-to-br from-secondary to-secondary/80 flex items-center justify-center shadow-lg">
+                <span className="text-white font-bold text-lg">
+                  {getUserInitial()}
                 </span>
               </div>
               <div>
-                <p className="text-base font-semibold">{profile.full_name || 'Sem nome'}</p>
-                <p className="text-xs text-muted-foreground font-mono">{profile.display_id}</p>
+                <p className="text-base font-semibold">{getDisplayName()}</p>
+                <p className="text-xs text-muted-foreground font-mono">ID: {profile.display_id}</p>
               </div>
             </DialogTitle>
           </DialogHeader>
