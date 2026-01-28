@@ -159,6 +159,85 @@ export const useAllUserInvestments = () => {
   });
 };
 
+export const useAllUserBalances = () => {
+  const { data: isAdmin } = useIsAdmin();
+
+  return useQuery({
+    queryKey: ['all_user_balances'],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('user_balances')
+        .select('*');
+      
+      if (error) throw error;
+      return data;
+    },
+    enabled: isAdmin === true,
+  });
+};
+
+export const useUserTransactions = (userId: string | null) => {
+  const { data: isAdmin } = useIsAdmin();
+
+  return useQuery({
+    queryKey: ['user_transactions', userId],
+    queryFn: async () => {
+      if (!userId) return { deposits: [], withdrawals: [] };
+      
+      const { data, error } = await supabase
+        .from('transactions')
+        .select('*')
+        .eq('user_id', userId)
+        .order('created_at', { ascending: false });
+      
+      if (error) throw error;
+      
+      const deposits = data?.filter(t => t.type === 'deposit') || [];
+      const withdrawals = data?.filter(t => t.type === 'withdrawal') || [];
+      
+      return { deposits, withdrawals };
+    },
+    enabled: isAdmin === true && !!userId,
+  });
+};
+
+export const useUserReferrals = (profileId: string | null) => {
+  const { data: isAdmin } = useIsAdmin();
+
+  return useQuery({
+    queryKey: ['user_referrals', profileId],
+    queryFn: async () => {
+      if (!profileId) return { level1: [], levelB: [], levelC: [], total: 0 };
+      
+      // Get level 1 referrals
+      const { data: level1 } = await supabase
+        .from('profiles')
+        .select('*')
+        .eq('referred_by', profileId);
+      
+      // Get level B referrals
+      const level1Ids = (level1 || []).map(p => p.id);
+      const { data: levelB } = level1Ids.length > 0 
+        ? await supabase.from('profiles').select('*').in('referred_by', level1Ids)
+        : { data: [] };
+      
+      // Get level C referrals
+      const levelBIds = (levelB || []).map(p => p.id);
+      const { data: levelC } = levelBIds.length > 0
+        ? await supabase.from('profiles').select('*').in('referred_by', levelBIds)
+        : { data: [] };
+      
+      return {
+        level1: level1 || [],
+        levelB: levelB || [],
+        levelC: levelC || [],
+        total: (level1?.length || 0) + (levelB?.length || 0) + (levelC?.length || 0)
+      };
+    },
+    enabled: isAdmin === true && !!profileId,
+  });
+};
+
 export const useUpdateTransaction = () => {
   const queryClient = useQueryClient();
 
@@ -205,6 +284,47 @@ export const useUpdateTransaction = () => {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['all_transactions'] });
+      queryClient.invalidateQueries({ queryKey: ['admin_stats'] });
+    },
+  });
+};
+
+export const useDeleteUserInvestment = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async (investmentId: string) => {
+      const { error } = await supabase
+        .from('user_investments')
+        .delete()
+        .eq('id', investmentId);
+
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['all_user_investments'] });
+      queryClient.invalidateQueries({ queryKey: ['user_investments'] });
+    },
+  });
+};
+
+export const useDeleteUserAccount = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async (userId: string) => {
+      // Delete in order: investments, transactions, linked_accounts, user_balances, daily_checkins, profiles
+      await supabase.from('user_investments').delete().eq('user_id', userId);
+      await supabase.from('transactions').delete().eq('user_id', userId);
+      await supabase.from('linked_accounts').delete().eq('user_id', userId);
+      await supabase.from('user_balances').delete().eq('user_id', userId);
+      await supabase.from('daily_checkins').delete().eq('user_id', userId);
+      
+      const { error } = await supabase.from('profiles').delete().eq('user_id', userId);
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['all_profiles'] });
       queryClient.invalidateQueries({ queryKey: ['admin_stats'] });
     },
   });
