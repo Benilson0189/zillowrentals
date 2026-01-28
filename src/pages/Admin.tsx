@@ -23,11 +23,13 @@ import {
   useAllProfiles,
   useAllLinkedAccounts,
   useAllUserInvestments,
+  useAllUserBalances,
   useUpdateTransaction 
 } from '@/hooks/useAdmin';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
+import UserDetailModal from '@/components/admin/UserDetailModal';
 
 const Admin: React.FC = () => {
   const navigate = useNavigate();
@@ -38,10 +40,12 @@ const Admin: React.FC = () => {
   const { data: allProfiles } = useAllProfiles(searchTerm);
   const { data: linkedAccounts } = useAllLinkedAccounts();
   const { data: userInvestments } = useAllUserInvestments();
+  const { data: allBalances } = useAllUserBalances();
   const updateTransaction = useUpdateTransaction();
 
   const [activeTab, setActiveTab] = useState('deposits');
   const [selectedProof, setSelectedProof] = useState<string | null>(null);
+  const [selectedUser, setSelectedUser] = useState<any>(null);
 
   // Filter transactions by type
   const deposits = allTransactions?.filter(t => t.type === 'deposit') || [];
@@ -241,33 +245,48 @@ const Admin: React.FC = () => {
                 {searchTerm ? 'Nenhum usuário encontrado' : 'Nenhum usuário'}
               </p>
             ) : (
-              allProfiles?.map((profile) => (
-                <div key={profile.id} className="glass-card p-3">
-                  <div className="flex justify-between items-center">
-                    <div className="flex items-center gap-3">
-                      <div className="w-10 h-10 rounded-full bg-secondary flex items-center justify-center">
-                        <span className="text-white font-bold">
-                          {profile.full_name?.charAt(0)?.toUpperCase() || 'U'}
-                        </span>
-                      </div>
-                      <div>
-                        <p className="text-sm font-medium text-foreground">
-                          {profile.full_name || 'Sem nome'}
-                        </p>
-                        <p className="text-xs text-muted-foreground">{profile.phone}</p>
-                        <div className="flex items-center gap-2">
-                          <p className="text-[10px] text-secondary font-mono">{profile.display_id}</p>
-                          <span className="text-[10px] text-muted-foreground">•</span>
-                          <p className="text-[10px] text-muted-foreground">Código: {profile.invite_code}</p>
+              allProfiles?.map((profile) => {
+                const userBalance = allBalances?.find(b => b.user_id === profile.user_id);
+                return (
+                  <div 
+                    key={profile.id} 
+                    className="glass-card p-3 cursor-pointer hover:bg-foreground/10 transition-colors"
+                    onClick={() => setSelectedUser(profile)}
+                  >
+                    <div className="flex justify-between items-center">
+                      <div className="flex items-center gap-3">
+                        <div className="w-10 h-10 rounded-full bg-secondary flex items-center justify-center">
+                          <span className="text-white font-bold">
+                            {profile.full_name?.charAt(0)?.toUpperCase() || 'U'}
+                          </span>
+                        </div>
+                        <div>
+                          <p className="text-sm font-medium text-foreground">
+                            {profile.full_name || 'Sem nome'}
+                          </p>
+                          <p className="text-xs text-muted-foreground">{profile.phone}</p>
+                          <div className="flex items-center gap-2">
+                            <p className="text-[10px] text-secondary font-mono">{profile.display_id}</p>
+                            <span className="text-[10px] text-muted-foreground">•</span>
+                            <p className="text-[10px] text-muted-foreground">Código: {profile.invite_code}</p>
+                          </div>
                         </div>
                       </div>
+                      <div className="text-right">
+                        <p className="text-sm font-bold text-success">
+                          $ {Number(userBalance?.balance || 0).toLocaleString('en-US')}
+                        </p>
+                        <p className="text-xs text-muted-foreground">
+                          {new Date(profile.created_at).toLocaleDateString('pt-AO')}
+                        </p>
+                        <button className="mt-1 text-[10px] text-secondary flex items-center gap-1">
+                          <Eye className="w-3 h-3" /> Ver detalhes
+                        </button>
+                      </div>
                     </div>
-                    <p className="text-xs text-muted-foreground">
-                      {new Date(profile.created_at).toLocaleDateString('pt-AO')}
-                    </p>
                   </div>
-                </div>
-              ))
+                );
+              })
             )}
           </TabsContent>
 
@@ -354,6 +373,15 @@ const Admin: React.FC = () => {
           )}
         </DialogContent>
       </Dialog>
+
+      {/* User Detail Modal */}
+      <UserDetailModal
+        isOpen={!!selectedUser}
+        onClose={() => setSelectedUser(null)}
+        profile={selectedUser}
+        balance={allBalances?.find(b => b.user_id === selectedUser?.user_id)}
+        investments={userInvestments || []}
+      />
     </div>
   );
 };
