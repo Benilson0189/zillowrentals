@@ -54,23 +54,25 @@ const Deposits: React.FC = () => {
               <div className="flex items-center justify-between mb-2">
                 <div className="flex items-center gap-2">
                   <ArrowDownCircle className="w-4 h-4 text-success" />
-                  <span className="text-sm font-medium text-foreground">Depósito</span>
+                  <span className="text-sm font-semibold text-foreground tracking-tight">Depósito</span>
                 </div>
-                <span className={`text-[10px] px-2 py-0.5 rounded-full ${getStatusColor(tx.status)}`}>
+                <span className={`text-[10px] px-2 py-0.5 rounded-full font-medium ${getStatusColor(tx.status)}`}>
                   {getStatusLabel(tx.status)}
                 </span>
               </div>
-              <div className="flex justify-between text-xs">
-                <span className="text-muted-foreground">Valor:</span>
-                <span className="text-foreground font-medium">
-                  Kz {Number(tx.amount).toLocaleString('pt-AO', { minimumFractionDigits: 2 })}
-                </span>
-              </div>
-              <div className="flex justify-between text-xs mt-1">
-                <span className="text-muted-foreground">Data:</span>
-                <span className="text-foreground">
-                  {new Date(tx.created_at).toLocaleDateString('pt-AO')}
-                </span>
+              <div className="bg-secondary/10 border border-secondary/20 rounded-lg p-2.5 space-y-1.5">
+                <div className="flex justify-between items-center">
+                  <span className="text-xs font-medium text-secondary/80 tracking-wide uppercase">Valor</span>
+                  <span className="text-sm font-semibold text-foreground tracking-tight">
+                    Kz {Number(tx.amount).toLocaleString('pt-AO', { minimumFractionDigits: 2 })}
+                  </span>
+                </div>
+                <div className="flex justify-between items-center">
+                  <span className="text-xs font-medium text-secondary/80 tracking-wide uppercase">Data</span>
+                  <span className="text-sm font-medium text-foreground tracking-tight">
+                    {new Date(tx.created_at).toLocaleDateString('pt-AO')}
+                  </span>
+                </div>
               </div>
             </div>
           ))
