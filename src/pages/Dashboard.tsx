@@ -10,6 +10,7 @@ import {
   ArrowRight,
   Gift
 } from 'lucide-react';
+import SupportButton from '@/components/SupportButton';
 import { useInvestmentPlans } from '@/hooks/useUserData';
 
 // Import property images
@@ -177,6 +178,9 @@ const Dashboard: React.FC = () => {
 
       {/* Spacer for bottom nav */}
       <div className="h-4"></div>
+
+      {/* Support Button */}
+      <SupportButton />
 
       {/* Bottom Navigation */}
       <nav className="fixed bottom-0 left-0 right-0 glass-card border-t border-foreground/10 px-2 py-1.5 z-50">
