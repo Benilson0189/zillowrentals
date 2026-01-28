@@ -21,6 +21,7 @@ import {
   Info,
 } from 'lucide-react';
 import SupportButton from '@/components/SupportButton';
+import defaultAvatar3D from '@/assets/default-avatar-3d.png';
 
 import { toast } from 'sonner';
 import { useAuth } from '@/hooks/useAuth';
@@ -188,10 +189,12 @@ const Profile: React.FC = () => {
       {/* Header */}
       <header className="glass-card mx-3 mt-3 p-3 flex items-center justify-between">
         <div className="flex items-center gap-3">
-          <div className="w-12 h-12 rounded-full bg-gradient-to-br from-secondary to-secondary/80 flex items-center justify-center border-2 border-secondary shadow-lg">
-            <span className="text-white font-bold text-xl">
-              {getUserInitial()}
-            </span>
+          <div className="w-14 h-14 rounded-full bg-gradient-to-br from-secondary/20 to-secondary/10 flex items-center justify-center border-2 border-secondary/30 shadow-lg overflow-hidden">
+            <img 
+              src={defaultAvatar3D} 
+              alt="Avatar" 
+              className="w-full h-full object-cover"
+            />
           </div>
           <div>
             <p className="text-sm font-medium text-foreground">

@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
-import { 
+import defaultAvatar3D from '@/assets/default-avatar-3d.png';
+import {
   X, 
   DollarSign, 
   Users, 
@@ -107,10 +108,12 @@ const UserDetailModal: React.FC<UserDetailModalProps> = ({
         <DialogContent className="bg-background border-foreground/10 max-w-lg max-h-[90vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle className="text-foreground flex items-center gap-3">
-              <div className="w-12 h-12 rounded-full bg-gradient-to-br from-secondary to-secondary/80 flex items-center justify-center shadow-lg">
-                <span className="text-white font-bold text-lg">
-                  {getUserInitial()}
-                </span>
+              <div className="w-14 h-14 rounded-full bg-gradient-to-br from-secondary/20 to-secondary/10 flex items-center justify-center border-2 border-secondary/30 shadow-lg overflow-hidden">
+                <img 
+                  src={defaultAvatar3D} 
+                  alt="Avatar" 
+                  className="w-full h-full object-cover"
+                />
               </div>
               <div>
                 <p className="text-base font-semibold">{getDisplayName()}</p>
