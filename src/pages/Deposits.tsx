@@ -17,9 +17,9 @@ const Deposits: React.FC = () => {
 
   const getStatusLabel = (status: string) => {
     switch (status) {
-      case 'approved': return 'Aprovado';
+      case 'approved': return 'Concluído';
       case 'rejected': return 'Rejeitado';
-      default: return 'Pendente';
+      default: return 'Em processamento';
     }
   };
 
