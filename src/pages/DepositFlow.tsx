@@ -10,7 +10,7 @@ const paymentMethods = [
     name: 'Transferência Express', 
     icon: Smartphone,
     bankDetails: {
-      expressNumber: '923 456 789',
+      expressNumber: '942 462 521',
     }
   },
   { 
@@ -237,6 +237,7 @@ const DepositFlow: React.FC = () => {
             <div className="mt-4 p-3 bg-secondary/10 border border-secondary/30 rounded-lg">
             <h3 className="text-xs font-semibold text-secondary mb-2">ℹ️ Informações de Depósito</h3>
               <ul className="text-[11px] text-muted-foreground space-y-1">
+                <li>• Depósitos disponíveis <span className="text-foreground font-medium">24h/24h</span></li>
                 <li>• Valor mínimo de depósito: <span className="text-foreground font-medium">Kz 1.000</span></li>
                 <li>• Depósitos são processados em <span className="text-foreground font-medium">5 a 20 minutos</span></li>
                 <li>• Guarde o comprovante de pagamento</li>
