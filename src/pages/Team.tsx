@@ -150,24 +150,21 @@ const Team: React.FC = () => {
           className={`glass-card p-2 text-center transition-colors ${filterLevel === 1 ? 'ring-2 ring-secondary' : ''}`}
         >
           <p className="text-[10px] text-muted-foreground mb-0.5">Nível A</p>
-          <p className="text-sm font-bold text-foreground">{level1.length}</p>
-          <p className="text-[10px] text-success">20% comissão</p>
+          <p className="text-lg font-bold text-foreground">{level1.length}</p>
         </button>
         <button
           onClick={() => setFilterLevel(filterLevel === 2 ? null : 2)}
           className={`glass-card p-2 text-center transition-colors ${filterLevel === 2 ? 'ring-2 ring-secondary' : ''}`}
         >
           <p className="text-[10px] text-muted-foreground mb-0.5">Nível B</p>
-          <p className="text-sm font-bold text-foreground">{levelB.length}</p>
-          <p className="text-[10px] text-success">3% comissão</p>
+          <p className="text-lg font-bold text-foreground">{levelB.length}</p>
         </button>
         <button
           onClick={() => setFilterLevel(filterLevel === 3 ? null : 3)}
           className={`glass-card p-2 text-center transition-colors ${filterLevel === 3 ? 'ring-2 ring-secondary' : ''}`}
         >
           <p className="text-[10px] text-muted-foreground mb-0.5">Nível C</p>
-          <p className="text-sm font-bold text-foreground">{levelC.length}</p>
-          <p className="text-[10px] text-success">1% comissão</p>
+          <p className="text-lg font-bold text-foreground">{levelC.length}</p>
         </button>
       </div>
 
