@@ -18,8 +18,8 @@ const paymentMethods = [
     name: 'Pagamento por Referência', 
     icon: CreditCard,
     bankDetails: {
-      entity: '00123',
-      reference: '123 456 789',
+      entity: '10116',
+      reference: '952214963',
     }
   },
   { 
