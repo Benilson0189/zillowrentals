@@ -319,6 +319,7 @@ export type Database = {
         Args: { _profile_id: string; _user_id: string }
         Returns: boolean
       }
+      phone_exists: { Args: { phone_number: string }; Returns: boolean }
     }
     Enums: {
       app_role: "admin" | "moderator" | "user"

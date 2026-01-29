@@ -40,16 +40,12 @@ const ForgotPassword: React.FC = () => {
     setIsLoading(true);
 
     const fullPhone = `${countryCode}${phone}`;
-    const email = phoneToEmail(fullPhone);
 
-    // Check if user exists
-    const { data: profiles, error: profileError } = await supabase
-      .from('profiles')
-      .select('phone')
-      .eq('phone', fullPhone)
-      .maybeSingle();
+    // Check if user exists using the security definer function
+    const { data: phoneExists, error: checkError } = await supabase
+      .rpc('phone_exists', { phone_number: fullPhone });
 
-    if (profileError || !profiles) {
+    if (checkError || !phoneExists) {
       toast.error('Número de conta não encontrado');
       setIsLoading(false);
       return;
