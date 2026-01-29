@@ -7,21 +7,23 @@ import {
   User,
   ChevronRight,
   LogOut,
-  Bell,
   ArrowDownCircle,
   ArrowUpCircle,
   CreditCard,
   Plus,
   Trash2,
   X,
-  Gift,
   HelpCircle,
   Shield,
   Clock,
   Info,
+  Wallet,
+  MessageSquare,
+  Download,
+  DollarSign,
 } from 'lucide-react';
 import SupportButton from '@/components/SupportButton';
-import defaultAvatar3D from '@/assets/default-avatar-3d.png';
+import logoImage from '@/assets/zillow-rentals-logo.jpg';
 
 import { toast } from 'sonner';
 import { useAuth } from '@/hooks/useAuth';
@@ -56,6 +58,7 @@ const Profile: React.FC = () => {
   const [showAddAccountForm, setShowAddAccountForm] = useState(false);
   const [showDepositsModal, setShowDepositsModal] = useState(false);
   const [showWithdrawalsModal, setShowWithdrawalsModal] = useState(false);
+  const [showCommissionsModal, setShowCommissionsModal] = useState(false);
   const [newAccount, setNewAccount] = useState({
     account_name: '',
     account_number: '',
@@ -63,7 +66,6 @@ const Profile: React.FC = () => {
   });
   
   const balance = balanceData?.balance || 0;
-  const totalEarnings = balanceData?.total_earnings || 0;
   const commissionEarnings = balanceData?.commission_earnings || 0;
 
   const handleLogout = async () => {
@@ -113,33 +115,7 @@ const Profile: React.FC = () => {
     }
   };
 
-  const menuItems = [
-    { icon: ArrowDownCircle, label: 'Fazer Depósito', color: 'text-success', onClick: () => navigate('/deposit') },
-    { icon: ArrowUpCircle, label: 'Fazer Saque', color: 'text-warning', onClick: () => navigate('/withdrawal') },
-    { icon: Clock, label: 'Histórico Depósitos', color: 'text-success', onClick: () => setShowDepositsModal(true) },
-    { icon: Clock, label: 'Histórico Saques', color: 'text-warning', onClick: () => setShowWithdrawalsModal(true) },
-    { icon: CreditCard, label: 'Contas Bancárias', color: 'text-secondary', onClick: () => setShowAccountsModal(true) },
-    { icon: Gift, label: 'Bônus', color: 'text-purple', onClick: () => navigate('/bonus') },
-    { icon: HelpCircle, label: 'Ajuda', color: 'text-muted-foreground', onClick: () => navigate('/help') },
-    { icon: Info, label: 'Sobre Nós', color: 'text-secondary', onClick: () => navigate('/about') },
-  ];
-
-  const getUserInitial = () => {
-    if (profile?.full_name && profile.full_name.trim()) {
-      return profile.full_name.charAt(0).toUpperCase();
-    }
-    return 'U';
-  };
-
-  const getDisplayName = () => {
-    if (profile?.full_name && profile.full_name.trim()) {
-      return profile.full_name;
-    }
-    return profile?.phone || 'Usuário';
-  };
-
   const getPhoneId = () => {
-    // Extract just the number without country code prefix
     const phone = profile?.phone || '';
     return phone.replace(/^\+\d{1,3}/, '');
   };
@@ -147,66 +123,93 @@ const Profile: React.FC = () => {
   // Check if user is the specific admin by phone number
   const isSpecificAdmin = profile?.phone?.includes('972683775');
 
+  const menuItems = [
+    { icon: User, label: 'Pessoal', onClick: () => navigate('/settings') },
+    { icon: Wallet, label: 'Registro de saldo', onClick: () => setShowCommissionsModal(true) },
+    { icon: ArrowDownCircle, label: 'Registro de recarga', onClick: () => setShowDepositsModal(true) },
+    { icon: ArrowUpCircle, label: 'Registro de saque', onClick: () => setShowWithdrawalsModal(true) },
+    { icon: Users, label: 'Meu time', onClick: () => navigate('/team') },
+    { icon: MessageSquare, label: 'Sobre nós', onClick: () => navigate('/about') },
+    { icon: Download, label: 'Baixar', onClick: () => toast.info('Em breve disponível') },
+    { icon: LogOut, label: 'Sair', onClick: handleLogout, isLogout: true },
+  ];
+
   return (
     <div className="min-h-screen bg-background">
-      {/* Header */}
-      <header className="glass-card mx-3 mt-3 p-3 flex items-center justify-between">
-        <div className="flex items-center gap-3">
-          <div className="w-14 h-14 rounded-full bg-gradient-to-br from-secondary/20 to-secondary/10 flex items-center justify-center border-2 border-secondary/30 shadow-lg overflow-hidden">
-            <img 
-              src={defaultAvatar3D} 
-              alt="Avatar" 
-              className="w-full h-full object-cover"
-            />
-          </div>
+      {/* Header with gradient background */}
+      <div className="relative bg-gradient-to-br from-secondary/20 via-secondary/10 to-background pt-6 pb-8 px-4">
+        {/* Decorative circles */}
+        <div className="absolute top-0 right-0 w-48 h-48 bg-secondary/5 rounded-full -mr-16 -mt-16" />
+        <div className="absolute top-20 right-20 w-24 h-24 bg-secondary/5 rounded-full" />
+        
+        <div className="relative flex items-start justify-between">
           <div>
-            <p className="text-sm font-medium text-foreground">
-              {getDisplayName()}
+            <p className="text-lg font-bold text-secondary">
+              {getPhoneId() || '...'}
             </p>
-            <p className="text-xs text-muted-foreground font-mono tracking-wider">
-              ID: {getPhoneId() || '...'}
+            <p className="text-2xl font-bold text-foreground mt-1">
+              $ {Number(balance).toLocaleString('en-US', { minimumFractionDigits: 2 })}
             </p>
+            <p className="text-xs text-muted-foreground">Saldo atual</p>
           </div>
-        </div>
-        <button className="relative p-1.5 rounded-full hover:bg-foreground/10">
-          <Bell className="w-4 h-4 text-foreground" />
-        </button>
-      </header>
-
-      {/* Balance Summary Card */}
-      <div className="glass-card mx-3 mt-3 p-4">
-        <p className="text-xs text-muted-foreground mb-1">Saldo Total Disponível</p>
-        <h2 className="text-2xl font-bold text-foreground">
-          $ {Number(balance).toLocaleString('en-US', { minimumFractionDigits: 2 })}
-        </h2>
-        <div className="mt-3 grid grid-cols-2 gap-3">
-          <div className="bg-foreground/5 rounded-lg p-2">
-            <p className="text-[10px] text-muted-foreground">Ganhos Totais</p>
-            <p className="text-sm font-semibold text-success">
-              $ {Number(totalEarnings).toLocaleString('en-US')}
-            </p>
-          </div>
-          <div className="bg-foreground/5 rounded-lg p-2">
-            <p className="text-[10px] text-muted-foreground">Comissões</p>
-            <p className="text-sm font-semibold text-secondary">
-              $ {Number(commissionEarnings).toLocaleString('en-US')}
-            </p>
+          
+          {/* Platform Logo */}
+          <div className="relative z-10">
+            <img 
+              src={logoImage} 
+              alt="Zillow Rentals" 
+              className="h-16 w-auto object-contain rounded-lg"
+            />
           </div>
         </div>
       </div>
 
-      {/* Menu Items */}
-      <div className="mx-3 mt-3 grid grid-cols-2 gap-2">
+      {/* Deposit and Withdrawal Actions */}
+      <div className="glass-card mx-3 -mt-4 p-4">
+        <h3 className="text-sm font-semibold text-secondary mb-3">Recarga e saque</h3>
+        <div className="grid grid-cols-2 gap-4">
+          <button
+            onClick={() => navigate('/deposit')}
+            className="flex flex-col items-center gap-2 py-3 px-4 rounded-xl bg-secondary/10 hover:bg-secondary/20 transition-colors"
+          >
+            <div className="w-12 h-12 rounded-full bg-secondary flex items-center justify-center">
+              <Wallet className="w-6 h-6 text-white" />
+            </div>
+            <span className="text-sm text-muted-foreground">Recarga</span>
+          </button>
+          <button
+            onClick={() => navigate('/withdrawal')}
+            className="flex flex-col items-center gap-2 py-3 px-4 rounded-xl bg-secondary/10 hover:bg-secondary/20 transition-colors"
+          >
+            <div className="w-12 h-12 rounded-full bg-secondary flex items-center justify-center">
+              <CreditCard className="w-6 h-6 text-white" />
+            </div>
+            <span className="text-sm text-muted-foreground">Saque</span>
+          </button>
+        </div>
+      </div>
+
+      {/* Menu Items List */}
+      <div className="glass-card mx-3 mt-3 overflow-hidden">
         {menuItems.map((item, index) => (
           <button
             key={index}
             onClick={item.onClick}
-            className="glass-card p-2.5 flex items-center gap-2 hover:bg-foreground/10 transition-colors"
+            className={`w-full flex items-center justify-between p-4 hover:bg-foreground/5 transition-colors ${
+              index !== menuItems.length - 1 ? 'border-b border-foreground/5' : ''
+            }`}
           >
-            <div className={`p-1.5 rounded-lg bg-foreground/5 ${item.color}`}>
-              <item.icon className="w-4 h-4" />
+            <div className="flex items-center gap-3">
+              <div className={`w-8 h-8 rounded-lg flex items-center justify-center ${
+                item.isLogout ? 'bg-destructive/10' : 'bg-secondary/10'
+              }`}>
+                <item.icon className={`w-4 h-4 ${item.isLogout ? 'text-destructive' : 'text-secondary'}`} />
+              </div>
+              <span className={`text-sm font-medium ${item.isLogout ? 'text-destructive' : 'text-foreground'}`}>
+                {item.label}
+              </span>
             </div>
-            <span className="text-xs font-medium text-foreground">{item.label}</span>
+            <ChevronRight className="w-4 h-4 text-muted-foreground" />
           </button>
         ))}
       </div>
@@ -216,24 +219,13 @@ const Profile: React.FC = () => {
         <div className="mx-3 mt-3">
           <button
             onClick={() => navigate('/admin')}
-            className="w-full p-2.5 flex items-center justify-center gap-1.5 rounded-lg bg-secondary text-white"
+            className="w-full p-3 flex items-center justify-center gap-2 rounded-lg bg-secondary text-white"
           >
             <Shield className="w-4 h-4" />
-            <span className="text-xs font-medium">Painel Admin</span>
+            <span className="text-sm font-medium">Painel Admin</span>
           </button>
         </div>
       )}
-
-      {/* Logout Button */}
-      <div className="mx-3 mt-4">
-        <button
-          onClick={handleLogout}
-          className="w-full p-3 flex items-center justify-center gap-1.5 rounded-lg border border-destructive/50 text-destructive hover:bg-destructive/10 transition-colors"
-        >
-          <LogOut className="w-4 h-4" />
-          <span className="text-sm font-medium">Sair da Conta</span>
-        </button>
-      </div>
 
       {/* Linked Accounts Modal */}
       <Dialog open={showAccountsModal} onOpenChange={setShowAccountsModal}>
@@ -396,6 +388,48 @@ const Profile: React.FC = () => {
                 </div>
               ))
             )}
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      {/* Commissions Modal */}
+      <Dialog open={showCommissionsModal} onOpenChange={setShowCommissionsModal}>
+        <DialogContent className="bg-background border-foreground/10 max-w-md">
+          <DialogHeader>
+            <DialogTitle className="text-foreground">Registro de Saldo</DialogTitle>
+          </DialogHeader>
+          
+          <div className="mt-4 space-y-4">
+            <div className="glass-card p-4">
+              <div className="flex items-center gap-3 mb-3">
+                <div className="w-10 h-10 rounded-full bg-success/20 flex items-center justify-center">
+                  <DollarSign className="w-5 h-5 text-success" />
+                </div>
+                <div>
+                  <p className="text-xs text-muted-foreground">Total Comissões de Convite</p>
+                  <p className="text-xl font-bold text-success">
+                    $ {Number(commissionEarnings).toLocaleString('en-US', { minimumFractionDigits: 2 })}
+                  </p>
+                </div>
+              </div>
+              <p className="text-xs text-muted-foreground">
+                Valor total acumulado das comissões recebidas por convites de Nível A (20%), Nível B (3%) e Nível C (1%).
+              </p>
+            </div>
+            
+            <div className="glass-card p-4">
+              <div className="flex items-center gap-3 mb-3">
+                <div className="w-10 h-10 rounded-full bg-secondary/20 flex items-center justify-center">
+                  <Wallet className="w-5 h-5 text-secondary" />
+                </div>
+                <div>
+                  <p className="text-xs text-muted-foreground">Saldo Disponível</p>
+                  <p className="text-xl font-bold text-foreground">
+                    $ {Number(balance).toLocaleString('en-US', { minimumFractionDigits: 2 })}
+                  </p>
+                </div>
+              </div>
+            </div>
           </div>
         </DialogContent>
       </Dialog>

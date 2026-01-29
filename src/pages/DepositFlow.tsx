@@ -27,10 +27,9 @@ const paymentMethods = [
     name: 'Transferência Bancária', 
     icon: Building2,
     bankDetails: {
-      bank: 'Banco BAI',
-      iban: 'AO06 0040 0000 1234 5678 9012 3',
-      accountName: 'ZILLOW RENTALS LLC',
-      nif: '5000123456',
+      bank: 'BFA',
+      iban: '000600001463400530155',
+      accountName: 'António Santos',
     }
   },
 ];
