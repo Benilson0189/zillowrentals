@@ -12,10 +12,14 @@ import {
   UserX,
   ChevronDown,
   ChevronUp,
-  Share2
+  Share2,
+  DollarSign,
+  Wallet
 } from 'lucide-react';
 import { toast } from 'sonner';
-import { useProfile, useTeamMembers } from '@/hooks/useUserData';
+import { useProfile, useTeamMembers, useBalance } from '@/hooks/useUserData';
+import { useTeamDeposits } from '@/hooks/useTeamDeposits';
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 
 const bottomNavItems = [
   { icon: Home, label: 'Início', path: '/dashboard' },
@@ -29,13 +33,24 @@ const Team: React.FC = () => {
   const [copied, setCopied] = useState(false);
   const [expandedUser, setExpandedUser] = useState<string | null>(null);
   const [filterLevel, setFilterLevel] = useState<number | null>(null);
+  const [showCommissionsModal, setShowCommissionsModal] = useState(false);
 
   const { data: profile } = useProfile();
   const { data: teamData, isLoading } = useTeamMembers();
+  const { data: balanceData } = useBalance();
 
   const inviteCode = profile?.invite_code || '';
-  // Shortened invite link using just the code
   const inviteLink = `${window.location.origin}/r/${inviteCode}`;
+  const commissionEarnings = balanceData?.commission_earnings || 0;
+
+  // Get all user IDs for deposit lookup
+  const allUserIds = [
+    ...(teamData?.level1 || []).map(u => u.user_id),
+    ...(teamData?.levelB || []).map(u => u.user_id),
+    ...(teamData?.levelC || []).map(u => u.user_id),
+  ];
+
+  const { data: teamDeposits = {} } = useTeamDeposits(allUserIds);
 
   const handleCopyLink = () => {
     navigator.clipboard.writeText(inviteLink);
@@ -125,12 +140,31 @@ const Team: React.FC = () => {
         </div>
       </div>
 
+      {/* Commission Total Card */}
+      <button 
+        onClick={() => setShowCommissionsModal(true)}
+        className="glass-card mx-3 mt-3 p-3 w-[calc(100%-1.5rem)] flex items-center justify-between hover:bg-foreground/5 transition-colors"
+      >
+        <div className="flex items-center gap-3">
+          <div className="w-10 h-10 rounded-full bg-success/20 flex items-center justify-center">
+            <DollarSign className="w-5 h-5 text-success" />
+          </div>
+          <div className="text-left">
+            <p className="text-xs text-muted-foreground">Total Comissões Recebidas</p>
+            <p className="text-lg font-bold text-success">
+              $ {Number(commissionEarnings).toLocaleString('en-US', { minimumFractionDigits: 2 })}
+            </p>
+          </div>
+        </div>
+        <ChevronDown className="w-4 h-4 text-muted-foreground" />
+      </button>
+
       {/* Team Stats */}
       <div className="mx-3 mt-3 grid grid-cols-2 gap-2">
         <div className="glass-card p-3">
           <div className="flex items-center gap-1.5 mb-1">
             <UserCheck className="w-4 h-4 text-success" />
-            <span className="text-xs text-muted-foreground">Ativos</span>
+            <span className="text-xs text-muted-foreground">VIP Ativos</span>
           </div>
           <p className="text-xl font-bold text-foreground">{totalActive}</p>
         </div>
@@ -181,70 +215,137 @@ const Team: React.FC = () => {
           </div>
         ) : (
           <div className="space-y-2">
-            {filteredUsers.map((user) => (
-              <div key={user.id} className="glass-card overflow-hidden">
-                <button
-                  onClick={() => setExpandedUser(expandedUser === user.id ? null : user.id)}
-                  className="w-full p-3 flex items-center justify-between"
-                >
-                  <div className="flex items-center gap-2">
-                    <div className={`w-8 h-8 rounded-full flex items-center justify-center ${user.isActive ? 'bg-success/20' : 'bg-muted/20'}`}>
-                      {user.isActive ? (
-                        <UserCheck className="w-4 h-4 text-success" />
-                      ) : (
-                        <UserX className="w-4 h-4 text-muted-foreground" />
-                      )}
-                    </div>
-                    <div className="text-left">
-                      <p className="text-sm font-medium text-foreground">
-                        {user.full_name || 'Usuário'}
-                      </p>
-                      <div className="flex items-center gap-2">
-                        <p className="text-[10px] text-muted-foreground">
-                          Nível {user.level === 1 ? 'A' : user.level === 2 ? 'B' : 'C'}
-                        </p>
-                        {user.isActive && (
-                          <span className="text-[9px] bg-success/20 text-success px-1.5 py-0.5 rounded-full">Ativo</span>
+            {filteredUsers.map((user) => {
+              const depositAmount = teamDeposits[user.user_id] || 0;
+              return (
+                <div key={user.id} className="glass-card overflow-hidden">
+                  <button
+                    onClick={() => setExpandedUser(expandedUser === user.id ? null : user.id)}
+                    className="w-full p-3 flex items-center justify-between"
+                  >
+                    <div className="flex items-center gap-2">
+                      <div className={`w-8 h-8 rounded-full flex items-center justify-center ${depositAmount > 0 ? 'bg-secondary/20' : 'bg-muted/20'}`}>
+                        {depositAmount > 0 ? (
+                          <Wallet className="w-4 h-4 text-secondary" />
+                        ) : (
+                          <UserX className="w-4 h-4 text-muted-foreground" />
                         )}
                       </div>
+                      <div className="text-left">
+                        <p className="text-sm font-medium text-foreground">
+                          {user.full_name || 'Usuário'}
+                        </p>
+                        <div className="flex items-center gap-2">
+                          <p className="text-[10px] text-muted-foreground">
+                            Nível {user.level === 1 ? 'A' : user.level === 2 ? 'B' : 'C'}
+                          </p>
+                          {user.isActive && (
+                            <span className="text-[9px] bg-success/20 text-success px-1.5 py-0.5 rounded-full">VIP</span>
+                          )}
+                        </div>
+                      </div>
                     </div>
-                  </div>
-                  <div className="flex items-center gap-1.5">
-                    {expandedUser === user.id ? (
-                      <ChevronUp className="w-4 h-4 text-muted-foreground" />
-                    ) : (
-                      <ChevronDown className="w-4 h-4 text-muted-foreground" />
-                    )}
-                  </div>
-                </button>
+                    <div className="flex items-center gap-1.5">
+                      <span className="text-xs font-medium text-secondary">
+                        $ {depositAmount.toLocaleString('en-US')}
+                      </span>
+                      {expandedUser === user.id ? (
+                        <ChevronUp className="w-4 h-4 text-muted-foreground" />
+                      ) : (
+                        <ChevronDown className="w-4 h-4 text-muted-foreground" />
+                      )}
+                    </div>
+                  </button>
 
-                {/* Expanded Details */}
-                {expandedUser === user.id && (
-                  <div className="px-3 pb-3 border-t border-foreground/5 pt-2">
-                    <div className="text-xs space-y-1.5">
-                      <div className="flex justify-between">
-                        <span className="text-muted-foreground">Telefone:</span>
-                        <span className="text-foreground">{user.phone || 'N/A'}</span>
+                  {/* Expanded Details */}
+                  {expandedUser === user.id && (
+                    <div className="px-3 pb-3 border-t border-foreground/5 pt-2">
+                      <div className="text-xs space-y-1.5">
+                        <div className="flex justify-between">
+                          <span className="text-muted-foreground">Telefone:</span>
+                          <span className="text-foreground">{user.phone || 'N/A'}</span>
+                        </div>
+                        <div className="flex justify-between">
+                          <span className="text-muted-foreground">Cadastro:</span>
+                          <span className="text-foreground">
+                            {new Date(user.created_at).toLocaleDateString('pt-AO')}
+                          </span>
+                        </div>
+                        <div className="flex justify-between">
+                          <span className="text-muted-foreground">Valor Depositado:</span>
+                          <span className="text-secondary font-medium">
+                            $ {depositAmount.toLocaleString('en-US')}
+                          </span>
+                        </div>
                       </div>
-                      <div className="flex justify-between">
-                        <span className="text-muted-foreground">Cadastro:</span>
-                        <span className="text-foreground">
-                          {new Date(user.created_at).toLocaleDateString('pt-AO')}
-                        </span>
+                      <div className={`mt-2 rounded-lg p-2 text-center ${user.isActive ? 'bg-success/10' : 'bg-warning/10'}`}>
+                        <p className={`text-xs ${user.isActive ? 'text-success' : 'text-warning'}`}>
+                          {user.isActive 
+                            ? '✓ VIP ativo - Comissões liberadas' 
+                            : '⚠️ Sem VIP - Comissões pendentes'}
+                        </p>
                       </div>
                     </div>
-                    <div className={`mt-2 rounded-lg p-2 text-center ${user.isActive ? 'bg-success/10' : 'bg-foreground/5'}`}>
-                      <p className={`text-xs ${user.isActive ? 'text-success' : 'text-muted-foreground'}`}>
-                        {user.isActive ? '✓ Com investimento ativo' : 'Sem investimentos ativos'}
-                      </p>
-                    </div>
-                  </div>
-                )}
-              </div>
-            ))}
+                  )}
+                </div>
+              );
+            })}
           </div>
         )}
       </div>
+
+      {/* Commissions Modal */}
+      <Dialog open={showCommissionsModal} onOpenChange={setShowCommissionsModal}>
+        <DialogContent className="bg-background border-foreground/10 max-w-md">
+          <DialogHeader>
+            <DialogTitle className="text-foreground">Comissões de Convite</DialogTitle>
+          </DialogHeader>
+          
+          <div className="mt-4 space-y-4">
+            <div className="glass-card p-4">
+              <div className="flex items-center gap-3 mb-3">
+                <div className="w-10 h-10 rounded-full bg-success/20 flex items-center justify-center">
+                  <DollarSign className="w-5 h-5 text-success" />
+                </div>
+                <div>
+                  <p className="text-xs text-muted-foreground">Total Recebido</p>
+                  <p className="text-xl font-bold text-success">
+                    $ {Number(commissionEarnings).toLocaleString('en-US', { minimumFractionDigits: 2 })}
+                  </p>
+                </div>
+              </div>
+              <p className="text-xs text-muted-foreground">
+                Valor total acumulado das comissões recebidas por convites.
+              </p>
+            </div>
+            
+            <div className="glass-card p-4 space-y-3">
+              <h4 className="text-sm font-medium text-foreground">Taxas de Comissão</h4>
+              <div className="space-y-2">
+                <div className="flex justify-between text-xs">
+                  <span className="text-muted-foreground">Nível A (diretos)</span>
+                  <span className="text-foreground font-medium">20%</span>
+                </div>
+                <div className="flex justify-between text-xs">
+                  <span className="text-muted-foreground">Nível B</span>
+                  <span className="text-foreground font-medium">3%</span>
+                </div>
+                <div className="flex justify-between text-xs">
+                  <span className="text-muted-foreground">Nível C</span>
+                  <span className="text-foreground font-medium">1%</span>
+                </div>
+              </div>
+            </div>
+
+            <div className="p-3 bg-warning/10 border border-warning/30 rounded-lg">
+              <p className="text-xs text-warning font-medium mb-1">⚠️ Importante</p>
+              <p className="text-[11px] text-muted-foreground">
+                As comissões só são creditadas quando o convidado ativa um plano VIP (investimento).
+              </p>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
 
       {/* Bottom Navigation */}
       <nav className="fixed bottom-0 left-0 right-0 glass-card border-t border-foreground/10 px-2 py-1.5 z-50">

@@ -19,11 +19,11 @@ import {
   Info,
   Wallet,
   MessageSquare,
-  Download,
   DollarSign,
 } from 'lucide-react';
 import SupportButton from '@/components/SupportButton';
 import logoImage from '@/assets/zillow-rentals-logo.jpg';
+import defaultAvatar from '@/assets/default-avatar-3d.png';
 
 import { toast } from 'sonner';
 import { useAuth } from '@/hooks/useAuth';
@@ -34,6 +34,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/u
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
 
 const bottomNavItems = [
   { icon: Home, label: 'Início', path: '/dashboard', active: false },
@@ -130,7 +131,6 @@ const Profile: React.FC = () => {
     { icon: ArrowUpCircle, label: 'Registro de saque', onClick: () => setShowWithdrawalsModal(true) },
     { icon: Users, label: 'Meu time', onClick: () => navigate('/team') },
     { icon: MessageSquare, label: 'Sobre nós', onClick: () => navigate('/about') },
-    { icon: Download, label: 'Baixar', onClick: () => toast.info('Em breve disponível') },
     { icon: LogOut, label: 'Sair', onClick: handleLogout, isLogout: true },
   ];
 
@@ -143,14 +143,22 @@ const Profile: React.FC = () => {
         <div className="absolute top-20 right-20 w-24 h-24 bg-secondary/5 rounded-full" />
         
         <div className="relative flex items-start justify-between">
-          <div>
-            <p className="text-lg font-bold text-secondary">
-              {getPhoneId() || '...'}
-            </p>
-            <p className="text-2xl font-bold text-foreground mt-1">
-              $ {Number(balance).toLocaleString('en-US', { minimumFractionDigits: 2 })}
-            </p>
-            <p className="text-xs text-muted-foreground">Saldo atual</p>
+          <div className="flex items-center gap-3">
+            <Avatar className="h-14 w-14 border-2 border-secondary/30">
+              <AvatarImage src={defaultAvatar} alt="Avatar" />
+              <AvatarFallback className="bg-secondary/20 text-secondary">
+                <User className="w-6 h-6" />
+              </AvatarFallback>
+            </Avatar>
+            <div>
+              <p className="text-lg font-bold text-secondary">
+                {getPhoneId() || '...'}
+              </p>
+              <p className="text-2xl font-bold text-foreground mt-1">
+                $ {Number(balance).toLocaleString('en-US', { minimumFractionDigits: 2 })}
+              </p>
+              <p className="text-xs text-muted-foreground">Saldo atual</p>
+            </div>
           </div>
           
           {/* Platform Logo */}
