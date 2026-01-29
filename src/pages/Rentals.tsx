@@ -15,6 +15,7 @@ import {
 import { toast } from 'sonner';
 import { useInvestmentPlans, useBalance } from '@/hooks/useUserData';
 import { useCreateInvestment } from '@/hooks/useInvestment';
+import { useUserHasDeposit } from '@/hooks/useTeamDeposits';
 import {
   Dialog,
   DialogContent,
@@ -67,6 +68,7 @@ const Rentals: React.FC = () => {
   const navigate = useNavigate();
   const { data: plans, isLoading } = useInvestmentPlans();
   const { data: balance } = useBalance();
+  const { data: hasDeposit, isLoading: checkingDeposit } = useUserHasDeposit();
   const createInvestment = useCreateInvestment();
   
   const [selectedPlan, setSelectedPlan] = useState<Plan | null>(null);
@@ -74,6 +76,13 @@ const Rentals: React.FC = () => {
   const [showSuccessDialog, setShowSuccessDialog] = useState(false);
 
   const handleInvest = (plan: Plan) => {
+    // Check if user has made a deposit first
+    if (!hasDeposit) {
+      toast.error('Você precisa fazer um depósito antes de ativar um plano VIP');
+      navigate('/deposit');
+      return;
+    }
+
     const availableBalance = balance?.balance || 0;
     
     if (availableBalance < plan.min_amount) {

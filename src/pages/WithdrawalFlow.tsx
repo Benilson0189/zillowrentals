@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ArrowLeft, Check, Plus, Wallet, Clock } from 'lucide-react';
+import { ArrowLeft, Check, Plus, Wallet, Clock, AlertTriangle } from 'lucide-react';
 import { toast } from 'sonner';
 import { useWithdrawal } from '@/hooks/useWithdrawal';
 import { useLinkedAccounts, useAddLinkedAccount } from '@/hooks/useLinkedAccounts';
 import { useBalance } from '@/hooks/useUserData';
+import { useUserHasActiveInvestment } from '@/hooks/useTeamDeposits';
 import {
   Dialog,
   DialogContent,
@@ -48,6 +49,7 @@ const WithdrawalFlow: React.FC = () => {
 
   const { data: balance } = useBalance();
   const { data: linkedAccounts, isLoading: accountsLoading } = useLinkedAccounts();
+  const { data: hasActiveInvestment, isLoading: checkingInvestment } = useUserHasActiveInvestment();
   const withdrawalMutation = useWithdrawal();
   const addAccountMutation = useAddLinkedAccount();
 
@@ -77,6 +79,11 @@ const WithdrawalFlow: React.FC = () => {
   };
 
   const handleSubmit = async () => {
+    if (!hasActiveInvestment) {
+      toast.error('Você precisa ter um investimento VIP ativo para sacar');
+      return;
+    }
+
     if (!isWithdrawalOpen) {
       toast.error(`Saques disponíveis apenas das 9h às 18h. Tente ${getNextOpeningTime()}.`);
       return;
@@ -134,6 +141,27 @@ const WithdrawalFlow: React.FC = () => {
         {step === 1 && (
           <div className="glass-card p-4">
             <h2 className="text-sm font-medium text-foreground mb-4">Valor do Saque</h2>
+            
+            {/* VIP Requirement Warning */}
+            {!checkingInvestment && !hasActiveInvestment && (
+              <div className="mb-4 p-3 bg-destructive/10 border border-destructive/30 rounded-lg">
+                <div className="flex items-center gap-2 mb-2">
+                  <AlertTriangle className="w-4 h-4 text-destructive" />
+                  <h3 className="text-xs font-semibold text-destructive">VIP Necessário</h3>
+                </div>
+                <p className="text-[11px] text-muted-foreground">
+                  Para realizar saques, você precisa ter pelo menos um <span className="text-foreground font-medium">investimento VIP ativo</span>.
+                  <br />
+                  <button 
+                    onClick={() => navigate('/rentals')} 
+                    className="text-secondary underline mt-1"
+                  >
+                    Ativar VIP agora
+                  </button>
+                </p>
+              </div>
+            )}
+
             <div className="relative">
               <span className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground text-sm">Kz</span>
               <input
@@ -143,6 +171,7 @@ const WithdrawalFlow: React.FC = () => {
                 placeholder="0.00"
                 className="input-dark pl-10 text-lg"
                 max={availableBalance}
+                disabled={!hasActiveInvestment}
               />
             </div>
             <p className="text-xs text-muted-foreground mt-2">Mínimo: Kz 1.800</p>
@@ -194,6 +223,10 @@ const WithdrawalFlow: React.FC = () => {
             
             <button
               onClick={() => {
+                if (!hasActiveInvestment) {
+                  toast.error('Você precisa ter um investimento VIP ativo para sacar');
+                  return;
+                }
                 if (Number(amount) < 1800) {
                   toast.error('Valor mínimo: Kz 1.800');
                   return;
@@ -204,7 +237,8 @@ const WithdrawalFlow: React.FC = () => {
                 }
                 setStep(2);
               }}
-              className="btn-primary mt-4"
+              disabled={!hasActiveInvestment}
+              className="btn-primary mt-4 disabled:opacity-50"
             >
               Continuar
             </button>
