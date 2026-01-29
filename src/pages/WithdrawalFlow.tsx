@@ -1,6 +1,6 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ArrowLeft, Check, Plus, Wallet } from 'lucide-react';
+import { ArrowLeft, Check, Plus, Wallet, Clock } from 'lucide-react';
 import { toast } from 'sonner';
 import { useWithdrawal } from '@/hooks/useWithdrawal';
 import { useLinkedAccounts, useAddLinkedAccount } from '@/hooks/useLinkedAccounts';
@@ -12,12 +12,34 @@ import {
   DialogTitle,
 } from '@/components/ui/dialog';
 
+// Check if current time is within withdrawal hours (9h-18h)
+const isWithinWithdrawalHours = (): boolean => {
+  const now = new Date();
+  const hours = now.getHours();
+  return hours >= 9 && hours < 18;
+};
+
+const getNextOpeningTime = (): string => {
+  const now = new Date();
+  const hours = now.getHours();
+  
+  if (hours >= 18) {
+    // After 18h, next opening is tomorrow at 9h
+    return 'amanhã às 9h';
+  } else if (hours < 9) {
+    // Before 9h, opening is today at 9h
+    return 'hoje às 9h';
+  }
+  return '';
+};
+
 const WithdrawalFlow: React.FC = () => {
   const navigate = useNavigate();
   const [step, setStep] = useState(1);
   const [amount, setAmount] = useState('');
   const [selectedAccount, setSelectedAccount] = useState('');
   const [showAddAccount, setShowAddAccount] = useState(false);
+  const [isWithdrawalOpen, setIsWithdrawalOpen] = useState(isWithinWithdrawalHours());
   const [newAccount, setNewAccount] = useState({
     account_name: '',
     account_number: '',
@@ -30,6 +52,13 @@ const WithdrawalFlow: React.FC = () => {
   const addAccountMutation = useAddLinkedAccount();
 
   const availableBalance = balance?.balance || 0;
+
+  // Update withdrawal availability every minute
+  useEffect(() => {
+    const checkTime = () => setIsWithdrawalOpen(isWithinWithdrawalHours());
+    const interval = setInterval(checkTime, 60000);
+    return () => clearInterval(interval);
+  }, []);
 
   const handleAddAccount = async () => {
     if (!newAccount.account_name || !newAccount.account_number || !newAccount.bank_name) {
@@ -48,6 +77,11 @@ const WithdrawalFlow: React.FC = () => {
   };
 
   const handleSubmit = async () => {
+    if (!isWithdrawalOpen) {
+      toast.error(`Saques disponíveis apenas das 9h às 18h. Tente ${getNextOpeningTime()}.`);
+      return;
+    }
+
     if (!amount || !selectedAccount) {
       toast.error('Preencha todos os campos');
       return;
@@ -113,10 +147,26 @@ const WithdrawalFlow: React.FC = () => {
             </div>
             <p className="text-xs text-muted-foreground mt-2">Mínimo: Kz 1.800</p>
             
+            {/* Withdrawal Hours Warning */}
+            {!isWithdrawalOpen && (
+              <div className="mt-4 p-3 bg-destructive/10 border border-destructive/30 rounded-lg">
+                <div className="flex items-center gap-2 mb-2">
+                  <Clock className="w-4 h-4 text-destructive" />
+                  <h3 className="text-xs font-semibold text-destructive">Fora do Horário de Saque</h3>
+                </div>
+                <p className="text-[11px] text-muted-foreground">
+                  Os saques estão disponíveis apenas das <span className="text-foreground font-medium">9h às 18h</span>.
+                  <br />
+                  Por favor, tente novamente <span className="text-foreground font-medium">{getNextOpeningTime()}</span>.
+                </p>
+              </div>
+            )}
+
             {/* Withdrawal Info */}
             <div className="mt-4 p-3 bg-warning/10 border border-warning/30 rounded-lg">
               <h3 className="text-xs font-semibold text-warning mb-2">⚠️ Informações de Saque</h3>
               <ul className="text-[11px] text-muted-foreground space-y-1">
+                <li>• Horário de saque: <span className="text-foreground font-medium">9h às 18h</span></li>
                 <li>• Valor mínimo de saque: <span className="text-foreground font-medium">Kz 1.800</span></li>
                 <li>• Taxa de saque: <span className="text-warning font-medium">14%</span> sobre o valor</li>
                 <li>• Saques são processados em <span className="text-foreground font-medium">0 a 24 horas</span></li>
