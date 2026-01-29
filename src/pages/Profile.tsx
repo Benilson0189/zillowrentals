@@ -137,24 +137,24 @@ const Profile: React.FC = () => {
   return (
     <div className="min-h-screen bg-background">
       {/* Header with gradient background */}
-      <div className="relative bg-gradient-to-br from-secondary/20 via-secondary/10 to-background pt-6 pb-8 px-4">
+      <div className="relative bg-gradient-to-br from-secondary/20 via-secondary/10 to-background pt-4 pb-6 px-3">
         {/* Decorative circles */}
-        <div className="absolute top-0 right-0 w-48 h-48 bg-secondary/5 rounded-full -mr-16 -mt-16" />
-        <div className="absolute top-20 right-20 w-24 h-24 bg-secondary/5 rounded-full" />
+        <div className="absolute top-0 right-0 w-32 h-32 bg-secondary/5 rounded-full -mr-12 -mt-12" />
+        <div className="absolute top-14 right-14 w-16 h-16 bg-secondary/5 rounded-full" />
         
         <div className="relative flex items-start justify-between">
-          <div className="flex items-center gap-3">
-            <Avatar className="h-14 w-14 border-2 border-secondary/30">
+          <div className="flex items-center gap-2">
+            <Avatar className="h-10 w-10 border border-secondary/30">
               <AvatarImage src={defaultAvatar} alt="Avatar" />
               <AvatarFallback className="bg-secondary/20 text-secondary">
-                <User className="w-6 h-6" />
+                <User className="w-4 h-4" />
               </AvatarFallback>
             </Avatar>
             <div>
               <p className="text-lg font-bold text-secondary">
                 {getPhoneId() || '...'}
               </p>
-              <p className="text-2xl font-bold text-foreground mt-1">
+              <p className="text-2xl font-bold text-foreground mt-0.5">
                 $ {Number(balance).toLocaleString('en-US', { minimumFractionDigits: 2 })}
               </p>
               <p className="text-xs text-muted-foreground">Saldo atual</p>
@@ -166,31 +166,31 @@ const Profile: React.FC = () => {
             <img 
               src={logoImage} 
               alt="Zillow Rentals" 
-              className="h-16 w-auto object-contain rounded-lg"
+              className="h-12 w-auto object-contain rounded-md"
             />
           </div>
         </div>
       </div>
 
       {/* Deposit and Withdrawal Actions */}
-      <div className="glass-card mx-3 -mt-4 p-4">
-        <h3 className="text-sm font-semibold text-secondary mb-3">Recarga e saque</h3>
-        <div className="grid grid-cols-2 gap-4">
+      <div className="glass-card mx-3 -mt-3 p-3">
+        <h3 className="text-sm font-semibold text-secondary mb-2">Recarga e saque</h3>
+        <div className="grid grid-cols-2 gap-3">
           <button
             onClick={() => navigate('/deposit')}
-            className="flex flex-col items-center gap-2 py-3 px-4 rounded-xl bg-secondary/10 hover:bg-secondary/20 transition-colors"
+            className="flex flex-col items-center gap-1.5 py-2 px-3 rounded-lg bg-secondary/10 hover:bg-secondary/20 transition-colors"
           >
-            <div className="w-12 h-12 rounded-full bg-secondary flex items-center justify-center">
-              <Wallet className="w-6 h-6 text-white" />
+            <div className="w-8 h-8 rounded-full bg-secondary flex items-center justify-center">
+              <Wallet className="w-4 h-4 text-white" />
             </div>
             <span className="text-sm text-muted-foreground">Recarga</span>
           </button>
           <button
             onClick={() => navigate('/withdrawal')}
-            className="flex flex-col items-center gap-2 py-3 px-4 rounded-xl bg-secondary/10 hover:bg-secondary/20 transition-colors"
+            className="flex flex-col items-center gap-1.5 py-2 px-3 rounded-lg bg-secondary/10 hover:bg-secondary/20 transition-colors"
           >
-            <div className="w-12 h-12 rounded-full bg-secondary flex items-center justify-center">
-              <CreditCard className="w-6 h-6 text-white" />
+            <div className="w-8 h-8 rounded-full bg-secondary flex items-center justify-center">
+              <CreditCard className="w-4 h-4 text-white" />
             </div>
             <span className="text-sm text-muted-foreground">Saque</span>
           </button>
@@ -198,38 +198,38 @@ const Profile: React.FC = () => {
       </div>
 
       {/* Menu Items List */}
-      <div className="glass-card mx-3 mt-3 overflow-hidden">
+      <div className="glass-card mx-3 mt-2 overflow-hidden">
         {menuItems.map((item, index) => (
           <button
             key={index}
             onClick={item.onClick}
-            className={`w-full flex items-center justify-between p-4 hover:bg-foreground/5 transition-colors ${
+            className={`w-full flex items-center justify-between p-3 hover:bg-foreground/5 transition-colors ${
               index !== menuItems.length - 1 ? 'border-b border-foreground/5' : ''
             }`}
           >
-            <div className="flex items-center gap-3">
-              <div className={`w-8 h-8 rounded-lg flex items-center justify-center ${
+            <div className="flex items-center gap-2">
+              <div className={`w-6 h-6 rounded-md flex items-center justify-center ${
                 item.isLogout ? 'bg-destructive/10' : 'bg-secondary/10'
               }`}>
-                <item.icon className={`w-4 h-4 ${item.isLogout ? 'text-destructive' : 'text-secondary'}`} />
+                <item.icon className={`w-3 h-3 ${item.isLogout ? 'text-destructive' : 'text-secondary'}`} />
               </div>
               <span className={`text-sm font-medium ${item.isLogout ? 'text-destructive' : 'text-foreground'}`}>
                 {item.label}
               </span>
             </div>
-            <ChevronRight className="w-4 h-4 text-muted-foreground" />
+            <ChevronRight className="w-3 h-3 text-muted-foreground" />
           </button>
         ))}
       </div>
 
       {/* Admin Button (only for specific admin phone) */}
       {isSpecificAdmin && (
-        <div className="mx-3 mt-3">
+        <div className="mx-3 mt-2">
           <button
             onClick={() => navigate('/admin')}
-            className="w-full p-3 flex items-center justify-center gap-2 rounded-lg bg-secondary text-white"
+            className="w-full p-2.5 flex items-center justify-center gap-1.5 rounded-md bg-secondary text-white"
           >
-            <Shield className="w-4 h-4" />
+            <Shield className="w-3 h-3" />
             <span className="text-sm font-medium">Painel Admin</span>
           </button>
         </div>
@@ -407,11 +407,11 @@ const Profile: React.FC = () => {
             <DialogTitle className="text-foreground">Registro de Saldo</DialogTitle>
           </DialogHeader>
           
-          <div className="mt-4 space-y-4">
-            <div className="glass-card p-4">
-              <div className="flex items-center gap-3 mb-3">
-                <div className="w-10 h-10 rounded-full bg-success/20 flex items-center justify-center">
-                  <DollarSign className="w-5 h-5 text-success" />
+          <div className="mt-3 space-y-3">
+            <div className="glass-card p-3">
+              <div className="flex items-center gap-2 mb-2">
+                <div className="w-7 h-7 rounded-full bg-success/20 flex items-center justify-center">
+                  <DollarSign className="w-3.5 h-3.5 text-success" />
                 </div>
                 <div>
                   <p className="text-xs text-muted-foreground">Total Comissões de Convite</p>
@@ -425,10 +425,10 @@ const Profile: React.FC = () => {
               </p>
             </div>
             
-            <div className="glass-card p-4">
-              <div className="flex items-center gap-3 mb-3">
-                <div className="w-10 h-10 rounded-full bg-secondary/20 flex items-center justify-center">
-                  <Wallet className="w-5 h-5 text-secondary" />
+            <div className="glass-card p-3">
+              <div className="flex items-center gap-2">
+                <div className="w-7 h-7 rounded-full bg-secondary/20 flex items-center justify-center">
+                  <Wallet className="w-3.5 h-3.5 text-secondary" />
                 </div>
                 <div>
                   <p className="text-xs text-muted-foreground">Saldo Disponível</p>
