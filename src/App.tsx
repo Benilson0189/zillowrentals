@@ -124,7 +124,7 @@ const App = () => (
               <ProtectedRoute>
                 <AboutUs />
               </ProtectedRoute>
-            } />
+ <Route path="/invite/:token" element={<Invite />} />           } />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </AuthProvider>
